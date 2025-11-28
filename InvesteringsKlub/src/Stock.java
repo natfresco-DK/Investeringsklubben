@@ -2,6 +2,7 @@ public class Stock extends TradableItem {
     protected String name;
     protected String sector;
 
+    public Stock(){}
     public Stock (String ticker, double price, String currency, String name, String sector){
         super(ticker,price,currency);
         this.name = name;

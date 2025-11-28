@@ -3,6 +3,7 @@ public abstract class TradableItem {
     protected double price;
     protected String currency;
 
+    public TradableItem(){}
     public TradableItem(String ticker, double price, String currency){
         this.ticker = ticker;
         this.price = price;
