@@ -1,3 +1,5 @@
+package Domain;
+
 public class Stock extends TradableItem {
     protected String name;
     protected String sector;

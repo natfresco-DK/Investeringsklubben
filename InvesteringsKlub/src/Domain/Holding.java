@@ -1,22 +1,31 @@
+package Domain;
+
+import CSVHandler.*;
+
 public class Holding {
     protected String ticker;
     protected int quantity;
     protected double purchasePriceDKK;
     protected double currentPriceDKK;
+    protected StockRepository stockRepo;
 
     public Holding(){}
-    public Holding(String ticker, int quantity, double purchasePriceDKK, double currentPriceDKK){
+    public Holding(String ticker, int quantity, double purchasePriceDKK) {
         this.ticker = ticker;
         this.quantity = quantity;
         this.purchasePriceDKK = purchasePriceDKK;
-        this.currentPriceDKK = currentPriceDKK;
+        this.currentPriceDKK = purchasePriceDKK; // initially same as purchase
     }
-    public Holding(String ticker, int quantity){
+    public Holding(String ticker, int quantity, StockRepository stockRepo){
         this.ticker = ticker;
         this.quantity = quantity;
-        Stock stock = CSVStockRepository.getStockByTicker(ticker);
-        this.purchasePriceDKK = stock.getPrice();
-        this.currentPriceDKK = stock.getPrice();
+        this.stockRepo = stockRepo;
+
+        Stock stock = stockRepo.getStockByTicker(ticker);
+        if(stock != null) {
+            this.purchasePriceDKK = stock.getPrice();
+            this.currentPriceDKK = stock.getPrice();
+        }
     }
 
     public String getTicker() {
@@ -52,7 +61,7 @@ public class Holding {
     }
 
     public void updateCurrentPriceDKK(){
-        Stock stock = CSVStockRepository.getStockByTicker(ticker);
+        Stock stock = stockRepo.getStockByTicker(ticker);
         this.currentPriceDKK = stock.getPrice();
     }
 }

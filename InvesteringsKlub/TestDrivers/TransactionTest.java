@@ -1,0 +1,70 @@
+import Domain.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class TransactionTest {
+
+    private InMemoryStockRepository stockRepo;
+    private InMemoryTransactionRepository transactionRepo;
+    private User user;
+    private Portfolio portfolio;
+
+    @BeforeEach
+    void setup() {
+        // In-memory stocks
+        stockRepo = new InMemoryStockRepository();
+        stockRepo.addStock(new Stock("AAPL", 150.0, "DKK", "Apple inc.","Tech"));
+        stockRepo.addStock(new Stock("GOOG", 2800.0, "DKK", "Google inc.","Tech"));
+
+        // In-memory transaction repository
+        transactionRepo = new InMemoryTransactionRepository();
+
+        // Test user and portfolio
+        user = new User(
+                1,
+                "Alice Johnson",
+                "alice@example.com",
+                new Date(1990, 1, 1),
+                10000,
+                new Date(),
+                new Date()
+        );
+        portfolio = new Portfolio(user, 10000.0);
+    }
+
+    @Test
+    void testBuyStockLogsTransaction() {
+        boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+        assertTrue(result);
+
+        List<Transaction> transactions = transactionRepo.getTransactions();
+        assertEquals(1, transactions.size());
+
+        Transaction trx = transactions.get(0);
+        assertEquals(1, trx.getUserID());
+        assertEquals("AAPL", trx.getTicker());
+        assertEquals(10, trx.getQuantity());
+        assertEquals(OrderType.BUY, trx.getOrderType());
+    }
+
+    @Test
+    void testSellStockLogsTransaction() {
+        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+
+        boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo);
+        assertTrue(result);
+
+        List<Transaction> transactions = transactionRepo.getTransactions();
+        assertEquals(2, transactions.size());
+
+        Transaction sellTrx = transactions.get(1);
+        assertEquals(1, sellTrx.getUserID());
+        assertEquals("AAPL", sellTrx.getTicker());
+        assertEquals(5, sellTrx.getQuantity());
+        assertEquals(OrderType.SELL, sellTrx.getOrderType());
+    }
+}

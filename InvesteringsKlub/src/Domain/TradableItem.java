@@ -1,3 +1,5 @@
+package Domain;
+
 public abstract class TradableItem {
     protected String ticker;
     protected double price;
