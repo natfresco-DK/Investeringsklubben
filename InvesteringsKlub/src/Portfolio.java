@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Portfolio {
     protected double totalValueDKK;
-    protected List<Holding> holdings = new ArrayList<>();
+    protected HashMap<String, Holding> holdings = new HashMap<>();
 
     public Portfolio(){
         updateTotalValue();
@@ -12,16 +12,22 @@ public class Portfolio {
         return totalValueDKK;
     }
 
-    public List<Holding> getHoldings() {
+    public HashMap<String,Holding> getHoldings() {
         return holdings;
+    }
+
+    public void addHolding(Holding holding) {
+        holdings.put(holding.getTicker(),holding);
     }
 
     public void updateTotalValue(){
         double value = 0;
-        for(Holding h: holdings){
-            h.updateCurrentPriceDKK();
-            value += h.getCurrentPriceDKk();
+        for(String h: holdings.keySet()){
+            holdings.get(h).updateCurrentPriceDKK();
+            value += holdings.get(h).getCurrentPriceDKk();
         }
         totalValueDKK = value;
     }
+
+
 }

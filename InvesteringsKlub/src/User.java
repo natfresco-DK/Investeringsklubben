@@ -11,7 +11,7 @@ public class User {
     protected double balance;
     protected Date createdAt;
     protected Date lastUpdated;
-    Map<String, Holding> portfolio = new HashMap<>();
+    protected Portfolio portfolio;
 
     public User(){}
     public User(int id, String name, String email, Date birth, int initialCashDKK, Date created, Date lastUpdated){
@@ -68,15 +68,15 @@ public class User {
         return balance;
     }
 
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
     public void setBalance(double balance) {
         this.balance = balance;
     }
 
-    public Map<String, Holding> getPortfolio() {
-        return portfolio;
-    }
-
-    public void setPortfolio(Map<String, Holding> portfolio) {
+    public void addPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
     }
 
@@ -102,7 +102,7 @@ public class User {
         setBalance(balance-=totalCost);
 
         //update portfolio
-        Holding holding =portfolio.getOrDefault(ticker, new Holding(ticker, 0));
+        Holding holding =portfolio.getHoldings().getOrDefault(ticker,new Holding(ticker,0));
         double totalCostExisting = holding.getQuantity() * holding.getPurchasePriceDKK() + totalCost;
         int newQuantity = holding.getQuantity() + qty;
         double newPurchasePrice = totalCostExisting / newQuantity;
@@ -110,7 +110,7 @@ public class User {
         holding.setQuantity(newQuantity);
         holding.setPurchasePriceDKK(newPurchasePrice);
         holding.setPurchasePriceDKK(price);
-        portfolio.put(ticker, holding);
+        portfolio.addHolding(holding);
 
         //log Transaction
         return true;

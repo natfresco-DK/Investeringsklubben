@@ -1,4 +1,4 @@
-public enum orderType {
+public enum OrderType {
     BUY,
     SELL
 }
