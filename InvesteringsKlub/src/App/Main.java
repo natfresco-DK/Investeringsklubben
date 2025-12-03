@@ -1,7 +1,7 @@
 package App;
 
 import CSVHandler.CSVTransactionRepository;
-import CSVHandler.CSVUserRepository;
+import Domain.CSVUserRepository;
 import Domain.OrderType;
 import Domain.Transaction;
 import Domain.User;
@@ -116,7 +116,7 @@ public class Main {
             }
         }
     }
-
+//jj
     // ----------------------------------------------------
     // USER STORY 7 – funktioner
     // ----------------------------------------------------
