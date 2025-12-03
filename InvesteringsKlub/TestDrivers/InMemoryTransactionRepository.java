@@ -1,7 +1,8 @@
-import CSVHandler.TransactionRepository;
 import Domain.Transaction;
 import java.util.ArrayList;
 import java.util.List;
+import CSVHandler.*;
+
 
 public class InMemoryTransactionRepository implements TransactionRepository {
     private final List<Transaction> transactions = new ArrayList<>();
@@ -10,6 +11,11 @@ public class InMemoryTransactionRepository implements TransactionRepository {
     @Override
     public int getNextTransactionId() {
         return nextId++;
+    }
+
+    @Override
+    public List<Transaction> readTransactionsByUserId(int userId) {
+        return List.of();
     }
 
     @Override

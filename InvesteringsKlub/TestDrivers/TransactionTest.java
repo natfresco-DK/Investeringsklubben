@@ -1,7 +1,7 @@
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import Domain.Transaction;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,5 +66,19 @@ class TransactionTest {
         assertEquals("AAPL", sellTrx.getTicker());
         assertEquals(5, sellTrx.getQuantity());
         assertEquals(OrderType.SELL, sellTrx.getOrderType());
+    }
+    @Test
+    void testMembersTransactionHistoryTrue(){
+        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+
+        boolean result = user.readTransactionHistory(transactionRepo);
+        assertTrue(result);
+
+    }
+    @Test
+    void testMembersTransactionHistoryFalse(){
+        boolean result = user.readTransactionHistory(transactionRepo);
+        assertTrue(result);
+
     }
 }

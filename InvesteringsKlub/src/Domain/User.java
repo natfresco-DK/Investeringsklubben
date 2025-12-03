@@ -2,8 +2,11 @@ package Domain;
 
 import CSVHandler.CSVStockRepository;
 import CSVHandler.CSVTransactionRepository;
+import CSVHandler.TransactionRepository;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 
 public class User {
     protected int userId;
@@ -70,5 +73,20 @@ public class User {
 
     public void sellStock(String ticker, int qty){
 
+    }
+    public boolean readTransactionHistory(TransactionRepository transactionRepo){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Type userID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
+
+        if (userTransactions.isEmpty()) {
+            System.out.println("No transactions found for this user.");
+            return false;
+        } else {
+            userTransactions.forEach(System.out::println); //Automatically uses the toString method in Transaction class
+            return true;
+        }
     }
 }
