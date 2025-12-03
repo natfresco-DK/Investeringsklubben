@@ -6,5 +6,6 @@ import java.util.*;
 public interface TransactionRepository {
     void writeTransaction(Transaction trx);
     int getNextTransactionId();
-    List<Transaction> readTransactionsByUserId(int userId);
+    List<Transaction> getTransactionsByUserId(int userId);
+
 }
