@@ -75,7 +75,7 @@ public class User {
         System.out.print("Type userID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
+        List<Transaction> userTransactions = transactionRepo.getTransactionsByUserId(userId);
 
         if (userTransactions.isEmpty()) {
             System.out.println("No transactions found for this user.");

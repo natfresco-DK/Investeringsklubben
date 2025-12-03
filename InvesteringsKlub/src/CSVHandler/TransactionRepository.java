@@ -7,5 +7,4 @@ public interface TransactionRepository {
     void writeTransaction(Transaction trx);
     int getNextTransactionId();
     List<Transaction> getTransactionsByUserId(int userId);
-
 }

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface StockRepository {
-    List<Stock> stocks = new ArrayList<>();
+
     void addStock(Stock stock);
-    public void clear();
+    void clear();
     List<Stock> getAllStocks();
     Stock getStockByTicker(String ticker);
     void loadFromCSV(String filePath);

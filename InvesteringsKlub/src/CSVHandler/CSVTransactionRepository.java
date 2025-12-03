@@ -11,6 +11,7 @@ import Domain.OrderType;
 import java.text.SimpleDateFormat;
 
 public class CSVTransactionRepository implements TransactionRepository {
+
     public void writeTransaction(Transaction trx) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         try (FileWriter writer = new FileWriter(filePath, true)) {
@@ -19,7 +20,6 @@ public class CSVTransactionRepository implements TransactionRepository {
             e.printStackTrace();
         }
     }
-
     public int getNextTransactionId() {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         int nextId = 1; //Default if file is empty

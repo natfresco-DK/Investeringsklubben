@@ -9,9 +9,6 @@ import Domain.Stock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class PortfolioTest {
 
     private InMemoryStockRepository stockRepo;
@@ -46,7 +43,7 @@ class PortfolioTest {
 
         // Holdings
         Holding holding = portfolio.getHoldings().get("AAPL");
-        double expectedValue = holding.getQuantity() * holding.getCurrentPriceDKk();
+        double expectedValue = holding.getQuantity() * holding.getCurrentPriceDKK();
         assertNotNull(holding);
         assertEquals(10, holding.getQuantity());
         assertEquals(150.0, holding.getPurchasePriceDKK());
@@ -72,7 +69,7 @@ class PortfolioTest {
         assertEquals(10000.0 - 1500.0 + 750.0, portfolio.getCashBalance());
 
         portfolio.updateTotalValue(stockRepo);
-        double expectedTotalValue = holding.getQuantity() * holding.getCurrentPriceDKk();
+        double expectedTotalValue = holding.getQuantity() * holding.getCurrentPriceDKK();
         assertEquals(expectedTotalValue, portfolio.getTotalValueDKK());
     }
 
