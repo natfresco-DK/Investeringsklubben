@@ -11,7 +11,10 @@ public class InMemoryTransactionRepository implements TransactionRepository {
     public int getNextTransactionId() {
         return nextId++;
     }
-
+    @Override
+    public List<Transaction> readTransactionsByUserId(int userId) {
+        return List.of();
+    }
     @Override
     public void writeTransaction(Transaction trx) {
         transactions.add(trx);
