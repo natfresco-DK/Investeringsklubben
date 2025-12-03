@@ -1,13 +1,12 @@
 import Domain.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.junit.jupiter.api.AfterEach;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
-
 
 import java.util.*;
 
@@ -58,7 +57,7 @@ class TransactionTest {
         assertEquals(1, transactions.size());
 
         Transaction trx = transactions.get(0);
-        assertEquals(user.getUserId(), trx.getUserID());
+        assertEquals(1, trx.getUserID());
         assertEquals("AAPL", trx.getTicker());
         assertEquals(10, trx.getQuantity());
         assertEquals(OrderType.BUY, trx.getOrderType());
@@ -75,7 +74,7 @@ class TransactionTest {
         assertEquals(2, transactions.size());
 
         Transaction sellTrx = transactions.get(1);
-        assertEquals(user.getUserId(), sellTrx.getUserID());
+        assertEquals(1, sellTrx.getUserID());
         assertEquals("AAPL", sellTrx.getTicker());
         assertEquals(5, sellTrx.getQuantity());
         assertEquals(OrderType.SELL, sellTrx.getOrderType());
