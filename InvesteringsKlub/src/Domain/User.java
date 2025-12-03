@@ -75,33 +75,37 @@ public class User {
         System.out.print("Type userID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
+        return readTransactionHistory(transactionRepo, userId);
+    }
+
+    // Ny testbar metode, som kan kaldes direkte med userId
+    public boolean readTransactionHistory(TransactionRepository transactionRepo, int userId) {
         List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
 
         if (userTransactions.isEmpty()) {
             System.out.println("No transactions found for this user.");
             return false;
-        } else {
-            // Headers
-            System.out.printf("%-5s %-8s %-12s %-8s %-10s %-10s %-10s %-8s%n",
-                    "ID", "UserID", "Date", "Ticker", "Price", "Currency", "Type", "Qty");
-
-            System.out.println("--------------------------------------------------------------------------------");
-
-            // Format for the output
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            for (Transaction t : userTransactions) {
-                System.out.printf("%-5d %-8d %-12s %-8s %-10.2f %-10s %-10s %-8d%n",
-                        t.getID(),
-                        t.getUserID(),
-                        sdf.format(t.getDate()),
-                        t.getTicker(),
-                        t.getPrice(),
-                        t.getCurrency(),
-                        t.getOrderType(),
-                        t.getQuantity());
-                return true;
-            }
         }
+
+        // Print headers
+        System.out.printf("%-5s %-8s %-12s %-8s %-10s %-10s %-10s %-8s%n",
+                "ID", "UserID", "Date", "Ticker", "Price", "Currency", "Type", "Qty");
+        System.out.println("--------------------------------------------------------------------------------");
+
+        // Format for output
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        for (Transaction t : userTransactions) {
+            System.out.printf("%-5d %-8d %-12s %-8s %-10.2f %-10s %-10s %-8d%n",
+                    t.getID(),
+                    t.getUserID(),
+                    sdf.format(t.getDate()),
+                    t.getTicker(),
+                    t.getPrice(),
+                    t.getCurrency(),
+                    t.getOrderType(),
+                    t.getQuantity());
+        }
+
         return true;
-        }
+    }
     }
