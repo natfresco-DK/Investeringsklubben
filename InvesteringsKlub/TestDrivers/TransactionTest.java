@@ -67,4 +67,16 @@ class TransactionTest {
         assertEquals(5, sellTrx.getQuantity());
         assertEquals(OrderType.SELL, sellTrx.getOrderType());
     }
+    @Test
+    void testSeeUsersTransactionhistoryTrue(){
+        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+
+        boolean result = user.readTransactionHistory(transactionRepo);
+        assertTrue(result);
+    }
+    @Test
+    void testSeeUsersTransactionhistoryFalse(){
+        boolean result = user.readTransactionHistory(transactionRepo);
+        assertTrue(result);
+    }
 }
