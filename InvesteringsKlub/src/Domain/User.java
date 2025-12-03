@@ -92,7 +92,6 @@ public class User {
                 "ID", "UserID", "Date", "Ticker", "Price", "Currency", "Type", "Qty");
         System.out.println("--------------------------------------------------------------------------------");
 
-        // Format for output
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         for (Transaction t : userTransactions) {
             System.out.printf("%-5d %-8d %-12s %-8s %-10.2f %-10s %-10s %-8d%n",

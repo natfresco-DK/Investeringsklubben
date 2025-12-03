@@ -1,14 +1,11 @@
 import Domain.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.api.AfterEach;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
-
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,12 +26,12 @@ class TransactionTest {
         // In-memory transaction repository
         transactionRepo = new InMemoryTransactionRepository();
 
-        // Test user
+        // Test user and portfolio
         user = new User(
                 1,
                 "Alice Johnson",
                 "alice@example.com",
-                new Date(90, 0, 1), // Year = 1990, Month = Jan (0-based)
+                new Date(1990, 1, 1),
                 10000,
                 new Date(),
                 new Date()
@@ -81,23 +78,18 @@ class TransactionTest {
     }
 
     @Test
-    void testSeeUsersTransactionHistoryTrue() {
+    void testSeeUsersTransactionhistoryTrue(){
         portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
 
         // Kald testbar metode direkte med userId
         boolean result = user.readTransactionHistory(transactionRepo, user.getUserId());
-
         assertTrue(result);
     }
 
     @Test
     void testSeeUsersTransactionHistoryFalse() {
-        // Simuler input med et userID uden transaktioner
-        String simulatedInput = "999\n"; // No transactions for this ID
-        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-
-        boolean result = user.readTransactionHistory(transactionRepo);
-
+        // Brug et userId uden transaktioner
+        boolean result = user.readTransactionHistory(transactionRepo, 999);
         assertFalse(result);
     }
 }
