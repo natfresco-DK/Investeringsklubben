@@ -11,33 +11,18 @@ public class PortfolioBuilder {
                                            TransactionRepository transactionRepo) {
         Portfolio portfolio = new Portfolio(user, user.getInitialCashDKK());
 
-        try (BufferedReader br = new BufferedReader(new FileReader(transactionsFile))) {
-            String line;
-            br.readLine(); // skip header
+        //Load Transactions for this user
+        List<Transaction> transactions = transactionRepo.getTransactionsByUserId(user.getUserId());
 
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                String txUserId = parts[0];
-                if (!txUserId.equals(String.valueOf(user.getUserId()))) continue;
+        //Sort Chronologically
+        transactions.sort(Comparator.comparing(Transaction::getID));
 
-                String ticker = parts[2];
-                double price = Double.parseDouble(parts[3]);
-                String orderType = parts[5]; // BUY or SELL
-                int quantity = Integer.parseInt(parts[6]);
+        //rebuild holdings from transactions
+        portfolio.rebuildHoldingsfromTransactions(transactionRepo,stockRepo);
 
-                if (orderType.equalsIgnoreCase("BUY")) {
-                    portfolio.buyStock(ticker, quantity, stockRepo, transactionRepo);
-                } else if (orderType.equalsIgnoreCase("SELL")) {
-                    portfolio.sellStock(ticker, quantity, stockRepo, transactionRepo);
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Update total value after all transactions
+        //Update total value after all transactions
         portfolio.updateTotalValue(stockRepo);
+
         return portfolio;
     }
 }

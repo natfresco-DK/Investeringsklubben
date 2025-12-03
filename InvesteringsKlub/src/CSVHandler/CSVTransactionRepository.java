@@ -53,7 +53,7 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
         return nextId;
     }
-    public List<Transaction> readTransactionsByUserId(int userId) {
+    public List<Transaction> getTransactionsByUserId(int userId) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         List<Transaction> result = new ArrayList<>();
 
@@ -95,4 +95,6 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
+
+
 }
