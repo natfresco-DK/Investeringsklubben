@@ -45,7 +45,7 @@ public class User {
 
     public int getInitialCashDKK() {
         return initialCashDKK;
-    }
+}
 
     public Date getCreatedAt() {
         return createdAt;
@@ -71,4 +71,6 @@ public class User {
     public void sellStock(String ticker, int qty){
 
     }
+    
+
 }
