@@ -1,8 +1,14 @@
+import CSVHandler.CSVStockRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.Date;
+import java.util.List;
+import Domain.Stock;
+
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,5 +94,25 @@ class PortfolioTest {
 
         assertEquals(3, portfolio.getHoldings().get("AAPL").getQuantity());
         assertEquals(10000.0 - 450.0, portfolio.getCashBalance());
+    }
+
+    @Test
+    void testSeeStockMarketLoadsFromCSV() {
+        // Arrange
+        CSVStockRepository repo = new CSVStockRepository();
+
+        // Act – læs CSV-filen
+        repo.loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
+        List<Stock> stocks = repo.getAllStocks();
+
+        // Assert – der skal være aktier i listen
+        assertFalse(stocks.isEmpty(), "Listen over aktier må ikke være tom");
+
+        // Vi ved fra CSV'en at NOVO-B findes
+        Stock pandora = repo.getStockByTicker("Pandora");
+        assertNotNull(pandora, "PANDORA burde være i listen");
+        assertEquals("Pandora", pandora.getName());
+        assertEquals(765.0, pandora.getPrice(), 0.0001);
+        assertEquals("DKK", pandora.getCurrency());
     }
 }
