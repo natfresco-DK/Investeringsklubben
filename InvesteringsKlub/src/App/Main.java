@@ -155,7 +155,7 @@ public class Main {
             System.out.println(name + ": " + valueMap.get(userId) + " DKK");
         }
     }
-
+//jj
     private static void portfolioBySector() {
 
         Map<String, String> sectorMap = new HashMap<>();
