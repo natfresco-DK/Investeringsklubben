@@ -7,7 +7,9 @@ import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
+
 import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionTest {
@@ -27,17 +29,23 @@ class TransactionTest {
         // In-memory transaction repository
         transactionRepo = new InMemoryTransactionRepository();
 
-        // Test user and portfolio
+        // Test user
         user = new User(
                 1,
                 "Alice Johnson",
                 "alice@example.com",
-                new Date(1990, 1, 1),
+                new Date(90, 0, 1), // Year = 1990, Month = Jan (0-based)
                 10000,
                 new Date(),
                 new Date()
         );
+
         portfolio = new Portfolio(user, 10000.0);
+    }
+
+    @AfterEach
+    void resetSystemIn() {
+        System.setIn(System.in);
     }
 
     @Test
@@ -49,7 +57,7 @@ class TransactionTest {
         assertEquals(1, transactions.size());
 
         Transaction trx = transactions.get(0);
-        assertEquals(1, trx.getUserID());
+        assertEquals(user.getUserId(), trx.getUserID());
         assertEquals("AAPL", trx.getTicker());
         assertEquals(10, trx.getQuantity());
         assertEquals(OrderType.BUY, trx.getOrderType());
@@ -66,21 +74,30 @@ class TransactionTest {
         assertEquals(2, transactions.size());
 
         Transaction sellTrx = transactions.get(1);
-        assertEquals(1, sellTrx.getUserID());
+        assertEquals(user.getUserId(), sellTrx.getUserID());
         assertEquals("AAPL", sellTrx.getTicker());
         assertEquals(5, sellTrx.getQuantity());
         assertEquals(OrderType.SELL, sellTrx.getOrderType());
     }
+
     @Test
-    void testSeeUsersTransactionhistoryTrue(){
+    void testSeeUsersTransactionHistoryTrue() {
         portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
 
-        boolean result = user.readTransactionHistory(transactionRepo);
+        // Kald testbar metode direkte med userId
+        boolean result = user.readTransactionHistory(transactionRepo, user.getUserId());
+
         assertTrue(result);
     }
+
     @Test
-    void testSeeUsersTransactionhistoryFalse(){
+    void testSeeUsersTransactionHistoryFalse() {
+        // Simuler input med et userID uden transaktioner
+        String simulatedInput = "999\n"; // No transactions for this ID
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
         boolean result = user.readTransactionHistory(transactionRepo);
-        assertTrue(result);
+
+        assertFalse(result);
     }
 }
