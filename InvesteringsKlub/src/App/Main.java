@@ -89,7 +89,7 @@ public class Main {
     //     USER STORY 7 MENU
     // ---------------------------
 
-    private static void leaderMenu() {  // === NYT ===
+    private static void leaderMenu() {
 
         while (true) {
             System.out.println("\n=== Klubleder Menu ===");
@@ -103,9 +103,9 @@ public class Main {
             scanner.nextLine();
 
             switch (choice) {
-                case 1 -> sortByHighestValue();     // === NYT ===
-                case 2 -> portfolioByUser();        // === NYT ===
-                case 3 -> portfolioBySector();      // === NYT ===
+                case 1 -> sortByHighestValue();
+                case 2 -> portfolioByUser();
+                case 3 -> portfolioBySector();
                 case 0 -> { return; }
                 default -> System.out.println("Ugyldigt valg.");
             }
@@ -116,7 +116,7 @@ public class Main {
     //     USER STORY 7 — Funktioner
     // ---------------------------
 
-    private static void sortByHighestValue() { // === NYT ===
+    private static void sortByHighestValue() {
 
         List<Transaction> trxs = transactionRepo.getAllTransactions();
 
@@ -132,7 +132,7 @@ public class Main {
         }
     }
 
-    private static void portfolioByUser() {  // === NYT ===
+    private static void portfolioByUser() {
 
         List<Transaction> trxs = transactionRepo.getAllTransactions();
         Map<Integer, Double> valueMap = new HashMap<>();
@@ -148,9 +148,9 @@ public class Main {
         }
     }
 
-    private static void portfolioBySector() {  // === NYT ===
+    private static void portfolioBySector() {
 
-        // *** MIDLOERTIDIG HARDCODET SEKTOR-MAPPING ***
+        // MIDLOERTIDIG HARDCODET SEKTOR-MAPPING
         Map<String, String> sectorMap = new HashMap<>();
         sectorMap.put("NOVO-B", "Healthcare");
         sectorMap.put("NZYM-B", "Healthcare");

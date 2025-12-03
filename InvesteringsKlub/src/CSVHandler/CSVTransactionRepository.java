@@ -60,14 +60,11 @@ public class CSVTransactionRepository implements TransactionRepository {
     public List<Transaction> getAllTransactions() {
         List<Transaction> transactions = new ArrayList<>();
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
-        // Primary parser matches Date.toString() like: Tue Dec 02 23:24:40 CET 2025
+
         SimpleDateFormat primarySdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-        // Add common CSV date formats as fallbacks
         SimpleDateFormat dashSdf = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat slashSdf = new SimpleDateFormat("dd/MM/yyyy");
-        // Older code used space-separated day month year
         SimpleDateFormat spaceSdf = new SimpleDateFormat("dd MM yyyy");
-        // ISO with timezone
         SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -83,7 +80,6 @@ public class CSVTransactionRepository implements TransactionRepository {
                         int userId = Integer.parseInt(parts[1].trim());
                         Date date;
                         String dateStr = parts[2].trim();
-                        // Try primary format first, then several fallbacks
                         try {
                             date = primarySdf.parse(dateStr);
                         } catch (ParseException e1) {
@@ -99,7 +95,6 @@ public class CSVTransactionRepository implements TransactionRepository {
                                         try {
                                             date = isoSdf.parse(dateStr);
                                         } catch (ParseException e5) {
-                                            // Couldn't parse date - log and skip this line
                                             System.err.println("Failed to parse date for transaction id " + parts[0].trim() + ": '" + dateStr + "'");
                                             continue;
                                         }
@@ -117,7 +112,7 @@ public class CSVTransactionRepository implements TransactionRepository {
                         Transaction trx = new Transaction(id, userId, date, ticker, price, currency, orderType, quantity);
                         transactions.add(trx);
                     } catch (IllegalArgumentException e) {
-                        e.printStackTrace(); // Fanger NumberFormatException også
+                        e.printStackTrace();
                     }
 
                 }
