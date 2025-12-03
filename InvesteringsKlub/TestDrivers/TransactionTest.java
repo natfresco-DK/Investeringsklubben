@@ -1,11 +1,8 @@
 import Domain.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,15 +68,17 @@ class TransactionTest {
         assertEquals(OrderType.SELL, sellTrx.getOrderType());
     }
     @Test
-    void testSeeUsersTransactionhistoryTrue(){
+    void testSeeUsersTransactionHistoryTrue() {
         portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
 
-        boolean result = user.readTransactionHistory(transactionRepo);
+        // Kald testbar metode direkte med userId
+        boolean result = user.readTransactionHistory(transactionRepo, user.getUserId());
         assertTrue(result);
     }
     @Test
-    void testSeeUsersTransactionhistoryFalse(){
-        boolean result = user.readTransactionHistory(transactionRepo);
-        assertTrue(result);
+    void testSeeUsersTransactionHistoryFalse() {
+        // Brug et userId uden transaktioner
+        boolean result = user.readTransactionHistory(transactionRepo, 999);
+        assertFalse(result);
     }
 }
