@@ -13,7 +13,13 @@ public class InMemoryTransactionRepository implements TransactionRepository {
     }
     @Override
     public List<Transaction> readTransactionsByUserId(int userId) {
-        return List.of();
+        List<Transaction> result = new ArrayList<>();
+        for (Transaction t : transactions) {
+            if (t.getUserID() == userId) {
+                result.add(t);
+            }
+        }
+        return result;
     }
     @Override
     public void writeTransaction(Transaction trx) {
