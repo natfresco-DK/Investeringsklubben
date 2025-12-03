@@ -1,6 +1,7 @@
 package Domain;
 
 import java.util.*;
+import CSVHandler.TransactionRepository;
 
 public class Transaction{
     protected int ID;
@@ -63,4 +64,18 @@ public class Transaction{
                 + orderType + ";"
                 + quantity;
     }
+    public static void readTransactionHistory(TransactionRepository transactionRepo){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Type userID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
+
+        if (userTransactions.isEmpty()) {
+            System.out.println("No transactions found for this user.");
+        } else {
+            userTransactions.forEach(System.out::println); //Automatically uses the toString method in Transaction class
+        }
+    }
+
 }

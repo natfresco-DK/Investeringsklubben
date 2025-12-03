@@ -1,12 +1,13 @@
 package CSVHandler;
 
 import Domain.Transaction;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.sql.Date;
+import Domain.OrderType;
+import java.text.SimpleDateFormat;
 
 public class CSVTransactionRepository implements TransactionRepository {
     public void writeTransaction(Transaction trx) {
@@ -50,5 +51,48 @@ public class CSVTransactionRepository implements TransactionRepository {
             }
         }
         return nextId;
+    }
+
+    public List<Transaction> readTransactionsByUserId(int userId) {
+        String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
+        List<Transaction> result = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            br.readLine(); // skip header
+
+            while ((line = br.readLine()) != null) {
+                String[] fields = line.split(";");
+
+                try {
+                    int csvUserId = Integer.parseInt(fields[1]);
+
+                    if (csvUserId == userId) {
+                        int id = Integer.parseInt(fields[0]);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                        java.util.Date utilDate = sdf.parse(fields[2]); // kan kaste ParseException
+                        Date date = new Date(utilDate.getTime());
+
+                        String ticker = fields[3];
+                        double price = Double.parseDouble(fields[4].replace(",", "."));
+                        String currency = fields[5];
+                        OrderType orderType = OrderType.valueOf(fields[6].toUpperCase());
+                        int quantity = Integer.parseInt(fields[7]);
+
+                        Transaction trx = new Transaction(id, csvUserId, date, ticker, price, currency, orderType, quantity);
+                        result.add(trx);
+                    }
+                } catch (ParseException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    // Log fejl og fortsæt til næste linje (så en korrupt linje ikke stopper hele læsningen)
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
