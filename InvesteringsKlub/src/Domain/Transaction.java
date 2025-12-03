@@ -1,6 +1,7 @@
 package Domain;
 
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 public class Transaction{
     protected int ID;
@@ -54,9 +55,12 @@ public class Transaction{
 
     @Override
     public String toString() {
+        // Use ISO-8601 format for stable CSV output (e.g. 2025-12-02T23:24:40Z)
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        String dateStr = (date != null) ? fmt.format(date) : "";
         return ID + ";"
                 + userID + ";"
-                + date + ";"
+                + dateStr + ";"
                 + ticker + ";"
                 + price + ";"
                 + currency + ";"

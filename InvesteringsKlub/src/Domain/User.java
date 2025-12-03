@@ -59,6 +59,8 @@ public class User {
         return portfolio;
     }
 
+
+
     public void addPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
     }
@@ -71,4 +73,5 @@ public class User {
     public void sellStock(String ticker, int qty){
 
     }
+
 }
