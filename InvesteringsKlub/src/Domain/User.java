@@ -26,7 +26,7 @@ public class User {
         this.lastUpdated = lastUpdated;
         this.portfolio = new Portfolio(this, initialCashDKK);
     }
-
+//jjjj
     public int getUserId() {
         return userId;
     }
