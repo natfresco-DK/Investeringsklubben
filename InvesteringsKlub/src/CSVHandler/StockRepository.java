@@ -11,4 +11,6 @@ public interface StockRepository {
     public void clear();
     List<Stock> getAllStocks();
     Stock getStockByTicker(String ticker);
+    void loadFromCSV(String filePath);
+
 }
