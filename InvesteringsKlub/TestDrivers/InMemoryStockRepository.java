@@ -1,3 +1,4 @@
+import CSVHandler.CSVStockRepository;
 import CSVHandler.StockRepository;
 import Domain.Stock;
 
@@ -15,7 +16,6 @@ public class InMemoryStockRepository implements StockRepository {
 
     @Override
     public void clear() {
-
     }
 
     @Override
@@ -26,5 +26,9 @@ public class InMemoryStockRepository implements StockRepository {
     @Override
     public Stock getStockByTicker(String ticker) {
         return stocks.get(ticker);
+    }
+
+    public void loadFromCSV(String filePath) {
+        CSVStockRepository repo = new CSVStockRepository();
     }
 }

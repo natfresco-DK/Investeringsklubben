@@ -1,0 +1,18 @@
+# Java compiled files
+*.class
+bin/
+out/
+
+# JUnit library files
+*.jar
+
+# IDE configuration files
+.classpath
+.project
+.settings/
+.vscode/
+InvesteringsKlub/*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

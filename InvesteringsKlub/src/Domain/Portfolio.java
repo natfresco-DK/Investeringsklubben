@@ -137,4 +137,14 @@ public class Portfolio {
         }
     }
 
+    public void rebuildHoldingsfromTransactions(TransactionRepository transactionRepo, StockRepository stockRepo) {
+        List<Transaction> transactions = transactionRepo.getTransactionsByUserId(owner.getUserId());
+        for (Transaction trx : transactions) {
+            if (trx.getOrderType() == OrderType.BUY) {
+                updateHolding(trx.getTicker(), trx.getQuantity(), trx.getPrice(), true, stockRepo);
+            } else if (trx.getOrderType() == OrderType.SELL) {
+                updateHolding(trx.getTicker(), trx.getQuantity(), trx.getPrice(), false, stockRepo);
+            }
+        }
+    }
 }
