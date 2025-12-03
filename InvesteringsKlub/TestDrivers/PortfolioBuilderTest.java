@@ -113,4 +113,14 @@ class PortfolioBuilderTest {
         //Check transactions logged
         assertEquals(2, transactionRepo.getTransactions().size());
     }
+
+    @Test
+    void testBuildPortfolioFrom(){
+        //check holdings
+
+        //update stock value
+
+        //check holdings again
+
+    }
 }

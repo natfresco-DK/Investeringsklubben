@@ -1,0 +1,157 @@
+@startuml
+
+top to bottom direction
+skinparam ClassAttributeIconSize 0
+
+class CSVStockRepository {
+  + CSVStockRepository(List<Stock>):
+  + CSVStockRepository():
+  # stocks: List<Stock>
+  + getAllStocks(): List<Stock>
+  + getStockByTicker(String): Stock
+  + addStock(Stock): void
+  + clear(): void
+}
+class CSVTransactionRepository {
+  + CSVTransactionRepository():
+  + writeTransaction(Transaction): void
+  + getNextTransactionId(): int
+}
+class Holding {
+  + Holding(String, int, StockRepository):
+  + Holding():
+  + Holding(String, int, double):
+  # stockRepo: StockRepository
+  # quantity: int
+  # currentPriceDKK: double
+  # ticker: String
+  # purchasePriceDKK: double
+  + setQuantity(int): void
+  + getCurrentPriceDKk(): double
+  + setTicker(String): void
+  + getTicker(): String
+  + setPurchasePriceDKK(double): void
+  + getQuantity(): int
+  + getPurchasePriceDKK(): double
+  + updateCurrentPriceDKK(): void
+  + setCurrentPriceDKK(double): void
+}
+enum OrderType << enumeration >> {
+  + OrderType():
+  + SELL:
+  + BUY:
+  + valueOf(String): OrderType
+  + values(): OrderType[]
+}
+class Portfolio {
+  + Portfolio(User, double):
+  # totalValueDKK: double
+  # holdings: HashMap<String, Holding>
+  # cashBalance: double
+  # owner: User
+  + updateTotalValue(StockRepository): void
+  + sellStock(String, int, StockRepository, TransactionRepository): boolean
+  + removeHolding(String, StockRepository): void
+  + getOwner(): User
+  + setCashBalance(double): void
+  - updateHolding(String, int, double, boolean, StockRepository): void
+  + getTotalValueDKK(): double
+  - executeTrade(String, int, OrderType, StockRepository, TransactionRepository): boolean
+  + buyStock(String, int, StockRepository, TransactionRepository): boolean
+  + getHoldings(): HashMap<String, Holding>
+  + addHolding(Holding, StockRepository): void
+  + getCashBalance(): double
+}
+class PortfolioBuilder {
+  + PortfolioBuilder():
+  + buildPortfolio(User, String, StockRepository, TransactionRepository): Portfolio
+}
+class Stock {
+  + Stock():
+  + Stock(String, double, String, String, String):
+  # sector: String
+  # name: String
+  + getSector(): String
+  + getName(): String
+}
+interface StockRepository << interface >> {
+  + stocks: List<Stock>
+  + addStock(Stock): void
+  + clear(): void
+  + getStockByTicker(String): Stock
+  + getAllStocks(): List<Stock>
+}
+class TradableItem {
+  + TradableItem(String, double, String):
+  + TradableItem():
+  # currency: String
+  # ticker: String
+  # price: double
+  + getCurrency(): String
+  + getPrice(): double
+  + getTicker(): String
+}
+class Transaction {
+  + Transaction(int, int, Date, String, double, String, OrderType, int):
+  + Transaction():
+  # quantity: int
+  # date: Date
+  # ID: int
+  # orderType: OrderType
+  # userID: int
+  # currency: String
+  # ticker: String
+  # price: double
+  + getQuantity(): int
+  + getTicker(): String
+  + getPrice(): double
+  + getUserID(): int
+  + getDate(): Date
+  + getID(): int
+  + getCurrency(): String
+  + toString(): String
+  + getOrderType(): OrderType
+}
+interface TransactionRepository << interface >> {
+  + writeTransaction(Transaction): void
+  + getNextTransactionId(): int
+}
+class User {
+  + User(int, String, String, Date, int, Date, Date):
+  + User():
+  # userId: int
+  # birthDate: Date
+  # createdAt: Date
+  # lastUpdated: Date
+  # portfolio: Portfolio
+  # initialCashDKK: int
+  # fullName: String
+  # email: String
+  + addPortfolio(Portfolio): void
+  + getFullName(): String
+  + getPortfolio(): Portfolio
+  + getUserId(): int
+  + getBirthDate(): Date
+  + getInitialCashDKK(): int
+  + getLastUpdated(): Date
+  + getEmail(): String
+  + setLastUpdated(Date): void
+  + sellStock(String, int): void
+  + getCreatedAt(): Date
+}
+
+CSVStockRepository        -->  Stock
+CSVStockRepository        --^  StockRepository
+CSVTransactionRepository  --^  TransactionRepository
+Holding                   -->  TradableItem
+Portfolio                "1" *--> "holdings\n*" Holding
+Portfolio                 -->  TransactionRepository
+Portfolio                "1" *--> "owner\n1" User
+PortfolioBuilder          -->  TransactionRepository
+PortfolioBuilder          -->  User
+Stock                     --^  TradableItem
+StockRepository          "1" *--> "stocks\n*" Stock
+Transaction              "1" *--> "orderType\n1" OrderType
+TransactionRepository     -->  Transaction
+User                      -->  Portfolio
+@enduml
