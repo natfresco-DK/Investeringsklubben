@@ -1,7 +1,7 @@
 package Domain;
 
 import java.util.*;
-import CSVHandler.TransactionRepository;
+import CSVHandler.*;
 import java.text.SimpleDateFormat;
 
 public class User {
@@ -104,7 +104,6 @@ public class User {
                     t.getOrderType(),
                     t.getQuantity());
         }
-
         return true;
-    }
+        }
     }
