@@ -1,7 +1,7 @@
 package Domain;
 
 import java.util.*;
-import CSVHandler.*;
+import CSVHandler.TransactionRepository;
 import java.text.SimpleDateFormat;
 
 public class User {
@@ -24,6 +24,21 @@ public class User {
         createdAt = created;
         this.lastUpdated = lastUpdated;
         this.portfolio = new Portfolio(this, initialCashDKK);
+    }
+    public User(int id, String name, String email, Date birth, int initialCashDKK, Date created, Date lastUpdated, boolean buildPortfolio) {
+        this.userId = id;
+        this.fullName = name;
+        this.email = email;
+        this.birthDate = birth;
+        this.initialCashDKK = initialCashDKK;
+        this.createdAt = created;
+        this.lastUpdated = lastUpdated;
+
+        if (buildPortfolio) {
+            this.portfolio = new Portfolio(this, initialCashDKK);
+        } else {
+            this.portfolio = null; // eller leave default (null)
+        }
     }
 
     public int getUserId() {
@@ -104,6 +119,11 @@ public class User {
                     t.getOrderType(),
                     t.getQuantity());
         }
+
         return true;
-        }
     }
+
+    public void setPortfolio(Portfolio p) {
+        this.portfolio = p;
+    }
+}

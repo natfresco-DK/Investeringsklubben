@@ -95,6 +95,33 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
+    public void loadFromCSV(String filePath) {
+        ArrayList<Object> transactions = new ArrayList<>(); // Clear existing transactions
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine(); // skip header
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                String[] fields = line.split(";");
+                if (fields.length < 8) continue;
 
+                int id = Integer.parseInt(fields[0].trim());
+                int userId = Integer.parseInt(fields[1].trim());
+                java.util.Date utilDate = sdf.parse(fields[2].trim());
+                Date date = new Date(utilDate.getTime());
+                String ticker = fields[3].trim();
+                double price = Double.parseDouble(fields[4].replace(",", ".").trim());
+                String currency = fields[5].trim();
+                OrderType orderType = OrderType.valueOf(fields[6].trim().toUpperCase());
+                int quantity = Integer.parseInt(fields[7].trim());
+
+                Transaction trx = new Transaction(id, userId, date, ticker, price, currency, orderType, quantity);
+                transactions.add(trx);
+            }
+        } catch (Exception e) {
+            System.out.println("Fejl ved læsning af CSV-fil: " + filePath);
+            e.printStackTrace();
+        }
+    }
 }

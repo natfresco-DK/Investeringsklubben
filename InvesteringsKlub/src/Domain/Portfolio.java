@@ -244,4 +244,31 @@ public class Portfolio {
         }
         this.totalValueDKK = this.cashBalance + holdingsValue;
     }
+
+    public void printHoldings() {
+        System.out.println("Holdings for user: " + owner.getFullName());
+
+        if (holdings == null || holdings.isEmpty()) {
+            System.out.println("  (No holdings)");
+            return;
+        }
+
+        System.out.println("  Ticker     Quantity     CurrentPriceDKK     TotalDKK");
+        System.out.println("  ----------------------------------------------------");
+
+        for (Holding h : holdings.values()) {
+            double currentPrice = h.getCurrentPriceDKk();
+            double total = currentPrice * h.getQuantity();
+
+            System.out.printf(
+                    "  %-10s %-10d %-17.2f %-10.2f%n",
+                    h.getTicker(),
+                    h.getQuantity(),
+                    currentPrice,
+                    total
+            );
+        }
+
+        System.out.println();
+    }
 }
