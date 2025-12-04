@@ -3,62 +3,49 @@ package CSVHandler;
 import Domain.User;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class CSVUserRepository {
-    public static List<User> loadUsers(String filePath) {
-        List<User> users = new ArrayList<>();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    private Map<Integer, User> users = new HashMap<>();
+    private SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 
+    public CSVUserRepository(String filePath) {
+        loadUsers(filePath);
+    }
+
+    private void loadUsers(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // skip header
 
-            String line = br.readLine(); // skip header
-
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(";");
 
-                int userId = Integer.parseInt(fields[0]);
+                int id = Integer.parseInt(fields[0]);
                 String fullName = fields[1];
                 String email = fields[2];
-
-                Date birthDate = sdf.parse(fields[3]);
+                Date birth = df.parse(fields[3]);
                 int initialCash = Integer.parseInt(fields[4]);
+                Date created = df.parse(fields[5]);
+                Date updated = df.parse(fields[6]);
 
-                Date createdAt = sdf.parse(fields[5]);
-                Date lastUpdated = sdf.parse(fields[6]);
-
-                User user = new User(
-                        userId,
-                        fullName,
-                        email,
-                        birthDate,
-                        initialCash,
-                        createdAt,
-                        lastUpdated,
-                        false // no auto building of portfolio so portfoliobuilder can make the right portfolio later
-                );
-
-                users.add(user);
+                User u = new User(id, fullName, email, birth, initialCash, created, updated);
+                users.put(id, u);
             }
-
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-        e.printStackTrace();
-    } catch (ParseException e) {
-            throw new RuntimeException(e);
         }
+    }
 
-        return users;
+
+    public User getUserById(int id) {
+        return users.get(id);
+    }
+
+    public Collection<User> getAllUsers() {
+        return users.values();
     }
 }
-
-
