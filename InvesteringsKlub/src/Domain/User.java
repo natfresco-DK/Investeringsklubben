@@ -1,9 +1,8 @@
 package Domain;
 
-import CSVHandler.CSVStockRepository;
-import CSVHandler.CSVTransactionRepository;
-
-import java.util.Date;
+import java.util.*;
+import CSVHandler.TransactionRepository;
+import java.text.SimpleDateFormat;
 
 public class User {
     protected int userId;
@@ -26,7 +25,22 @@ public class User {
         this.lastUpdated = lastUpdated;
         this.portfolio = new Portfolio(this, initialCashDKK);
     }
-//jjjj
+    public User(int id, String name, String email, Date birth, int initialCashDKK, Date created, Date lastUpdated, boolean buildPortfolio) {
+        this.userId = id;
+        this.fullName = name;
+        this.email = email;
+        this.birthDate = birth;
+        this.initialCashDKK = initialCashDKK;
+        this.createdAt = created;
+        this.lastUpdated = lastUpdated;
+
+        if (buildPortfolio) {
+            this.portfolio = new Portfolio(this, initialCashDKK);
+        } else {
+            this.portfolio = null; // eller leave default (null)
+        }
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -45,7 +59,7 @@ public class User {
 
     public int getInitialCashDKK() {
         return initialCashDKK;
-}
+    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -71,6 +85,45 @@ public class User {
     public void sellStock(String ticker, int qty){
 
     }
-    
+    public boolean readTransactionHistory(TransactionRepository transactionRepo) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Type userID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
 
+        return readTransactionHistory(transactionRepo, userId);
+    }
+
+    // Ny testbar metode, som kan kaldes direkte med userId
+    public boolean readTransactionHistory(TransactionRepository transactionRepo, int userId) {
+        List<Transaction> userTransactions = transactionRepo.getTransactionsByUserId(userId);
+
+        if (userTransactions.isEmpty()) {
+            System.out.println("No transactions found for this user.");
+            return false;
+        }
+
+        // Print headers
+        System.out.printf("%-5s %-8s %-12s %-8s %-10s %-10s %-10s %-8s%n",
+                "ID", "UserID", "Date", "Ticker", "Price", "Currency", "Type", "Qty");
+        System.out.println("--------------------------------------------------------------------------------");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        for (Transaction t : userTransactions) {
+            System.out.printf("%-5d %-8d %-12s %-8s %-10.2f %-10s %-10s %-8d%n",
+                    t.getID(),
+                    t.getUserID(),
+                    sdf.format(t.getDate()),
+                    t.getTicker(),
+                    t.getPrice(),
+                    t.getCurrency(),
+                    t.getOrderType(),
+                    t.getQuantity());
+        }
+
+        return true;
+    }
+
+    public void setPortfolio(Portfolio p) {
+        this.portfolio = p;
+    }
 }

@@ -1,5 +1,5 @@
-import CSVHandler.TransactionRepository;
-import Domain.Transaction;
+import CSVHandler.*;
+import Domain.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +11,16 @@ public class InMemoryTransactionRepository implements TransactionRepository {
     public int getNextTransactionId() {
         return nextId++;
     }
-
+    @Override
+    public List<Transaction> getTransactionsByUserId(int userId) {
+        List<Transaction> result = new ArrayList<>();
+        for (Transaction t : transactions) {
+            if (t.getUserID() == userId) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
     @Override
     public void writeTransaction(Transaction trx) {
         transactions.add(trx);
