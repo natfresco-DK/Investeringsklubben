@@ -20,7 +20,6 @@ public class CSVTransactionRepository implements TransactionRepository {
             e.printStackTrace();
         }
     }
-
     public int getNextTransactionId() {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         int nextId = 1; //Default if file is empty
