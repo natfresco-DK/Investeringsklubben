@@ -13,6 +13,10 @@ public class CSVStockRepository implements StockRepository {
 
     public CSVStockRepository(){}
 
+    public CSVStockRepository(List<Stock> stocks){
+        this.stocks = stocks;
+    }
+
     public void addStock(Stock stock){
         stocks.add(stock);
     }
