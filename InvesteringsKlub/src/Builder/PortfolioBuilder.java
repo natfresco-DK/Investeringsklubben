@@ -22,6 +22,7 @@ public class PortfolioBuilder {
 
         //Update total value after all transactions
         portfolio.updateTotalValue(stockRepo);
+
         return portfolio;
     }
 
