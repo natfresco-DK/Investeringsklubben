@@ -12,7 +12,7 @@ public class InMemoryTransactionRepository implements TransactionRepository {
         return nextId++;
     }
     @Override
-    public List<Transaction> readTransactionsByUserId(int userId) {
+    public List<Transaction> getTransactionsByUserId(int userId) {
         List<Transaction> result = new ArrayList<>();
         for (Transaction t : transactions) {
             if (t.getUserID() == userId) {

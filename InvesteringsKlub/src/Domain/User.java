@@ -25,6 +25,21 @@ public class User {
         this.lastUpdated = lastUpdated;
         this.portfolio = new Portfolio(this, initialCashDKK);
     }
+    public User(int id, String name, String email, Date birth, int initialCashDKK, Date created, Date lastUpdated, boolean buildPortfolio) {
+        this.userId = id;
+        this.fullName = name;
+        this.email = email;
+        this.birthDate = birth;
+        this.initialCashDKK = initialCashDKK;
+        this.createdAt = created;
+        this.lastUpdated = lastUpdated;
+
+        if (buildPortfolio) {
+            this.portfolio = new Portfolio(this, initialCashDKK);
+        } else {
+            this.portfolio = null; // eller leave default (null)
+        }
+    }
 
     public int getUserId() {
         return userId;
@@ -80,7 +95,7 @@ public class User {
 
     // Ny testbar metode, som kan kaldes direkte med userId
     public boolean readTransactionHistory(TransactionRepository transactionRepo, int userId) {
-        List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
+        List<Transaction> userTransactions = transactionRepo.getTransactionsByUserId(userId);
 
         if (userTransactions.isEmpty()) {
             System.out.println("No transactions found for this user.");
@@ -107,4 +122,8 @@ public class User {
 
         return true;
     }
+
+    public void setPortfolio(Portfolio p) {
+        this.portfolio = p;
     }
+}
