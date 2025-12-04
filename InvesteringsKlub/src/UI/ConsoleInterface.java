@@ -72,7 +72,7 @@ public class ConsoleInterface {
         System.out.println("\n--- Portfolio ---");
         System.out.println("Cash: " + currentUser.getPortfolio().getCashBalance() + " DKK");
         currentUser.getPortfolio().getHoldings().forEach((ticker, holding) ->
-                System.out.println(ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKk())
+                System.out.println(ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKK())
         );
         System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
     }
