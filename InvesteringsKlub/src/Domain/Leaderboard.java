@@ -3,6 +3,7 @@ package Domain;
 import Builder.PortfolioBuilder;
 import CSVHandler.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Leaderboard {
@@ -13,7 +14,8 @@ public class Leaderboard {
             String transactionsFile
     ) {
         // Load users
-        List<User> users = CSVUserRepository.loadUsers(usersFile);
+        CSVUserRepository userRepo = new CSVUserRepository(usersFile);
+        List<User> users = new ArrayList<>(userRepo.getAllUsers());
 
         // Load stocks
         StockRepository stockRepo = new CSVStockRepository();

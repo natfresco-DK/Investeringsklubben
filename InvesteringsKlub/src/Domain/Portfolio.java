@@ -257,7 +257,7 @@ public class Portfolio {
         System.out.println("  ----------------------------------------------------");
 
         for (Holding h : holdings.values()) {
-            double currentPrice = h.getCurrentPriceDKk();
+            double currentPrice = h.getCurrentPriceDKK();
             double total = currentPrice * h.getQuantity();
 
             System.out.printf(
