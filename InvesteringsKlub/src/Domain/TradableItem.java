@@ -23,4 +23,9 @@ public abstract class TradableItem {
     public String getTicker() {
         return ticker;
     }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
 }

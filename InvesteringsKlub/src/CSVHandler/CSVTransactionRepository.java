@@ -1,14 +1,19 @@
 package CSVHandler;
 
+import Domain.Stock;
 import Domain.Transaction;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Date;
 import Domain.OrderType;
 import java.text.SimpleDateFormat;
+
 
 public class CSVTransactionRepository implements TransactionRepository {
     public void writeTransaction(Transaction trx) {
@@ -95,6 +100,8 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
+
+
 
 
 }

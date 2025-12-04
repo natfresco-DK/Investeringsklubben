@@ -1,3 +1,4 @@
+import Builder.PortfolioBuilder;
 import CSVHandler.CSVStockRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,21 +99,56 @@ class PortfolioTest {
 
     @Test
     void testSeeStockMarketLoadsFromCSV() {
-        // Arrange
         CSVStockRepository repo = new CSVStockRepository();
-
-        // Act – læs CSV-filen
         repo.loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
         List<Stock> stocks = repo.getAllStocks();
-
-        // Assert – der skal være aktier i listen
         assertFalse(stocks.isEmpty(), "Listen over aktier må ikke være tom");
-
-        // Vi ved fra CSV'en at NOVO-B findes
         Stock pandora = repo.getStockByTicker("Pandora");
         assertNotNull(pandora, "PANDORA burde være i listen");
         assertEquals("Pandora", pandora.getName());
         assertEquals(765.0, pandora.getPrice(), 0.0001);
         assertEquals("DKK", pandora.getCurrency());
     }
+
+
+    @Test
+    void testPortfolioReturnCalculations() {
+        // Køb 10 AAPL til 150 (fra @BeforeEach-setup)
+        boolean buyResult = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+        assertTrue(buyResult);
+
+        // Tjek at vi har korrekt holding
+        Holding holding = portfolio.getHoldings().get("AAPL");
+        assertNotNull(holding);
+        assertEquals(10, holding.getQuantity());
+        assertEquals(150.0, holding.getPurchasePriceDKK(), 0.001);
+
+        // Simulér kursstigning: AAPL går fra 150 -> 200
+        Stock aapl = stockRepo.getStockByTicker("AAPL");
+        aapl.setPrice(200.0); // bruger setPrice fra TradableItem
+
+        // ACT – brug de nye beregningsmetoder
+        double investedDKK   = portfolio.calculateTotalInvestedDKK();
+        double currentDKK    = portfolio.calculateCurrentHoldingsValueDKK(stockRepo);
+        double realReturnDKK = portfolio.calculateRealReturnDKK(stockRepo);
+        double percentReturn = portfolio.calculateReturnPercentage(stockRepo);
+
+        // ASSERT
+        // Investering: 10 * 150 = 1500
+        assertEquals(1500.0, investedDKK, 0.001);
+
+        // Nuværdi: 10 * 200 = 2000
+        assertEquals(2000.0, currentDKK, 0.001);
+
+        // Reelt afkast: 2000 - 1500 = 500
+        assertEquals(500.0, realReturnDKK, 0.001);
+
+        // Procentafkast: (500 / 1500) * 100 = 33,33...%
+        double expectedPercent = (500.0 / 1500.0) * 100.0;
+        assertEquals(expectedPercent, percentReturn, 0.001);
+    }
+ // Skal gemmes i holdings.csv.
+
+
+
 }

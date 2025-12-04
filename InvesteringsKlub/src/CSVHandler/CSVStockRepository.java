@@ -52,7 +52,6 @@ public class CSVStockRepository implements StockRepository {
 
     public void loadFromCSV(String filePath) {
         clear();
-
         try (BufferedReader reader = Files.newBufferedReader(
                 Paths.get(filePath), StandardCharsets.UTF_8)) {
             String line = reader.readLine(); // header
@@ -72,9 +71,8 @@ public class CSVStockRepository implements StockRepository {
                 Stock stock = new Stock(ticker, price, currency, name, sector);
                 addStock(stock);
             }
-
         } catch (IOException e) {
-            System.out.println("Fejl ved lÃ¦sning af CSV-fil: " + filePath);
+            System.out.println("Fejl ved læsning af CSV-fil: " + filePath);
             e.printStackTrace();
         }
     }
@@ -84,7 +82,4 @@ public class CSVStockRepository implements StockRepository {
         value = value.replace(",", ".");
         return Double.parseDouble(value);
     }
-
-
-
 }

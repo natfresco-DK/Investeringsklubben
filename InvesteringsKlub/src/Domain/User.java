@@ -80,7 +80,7 @@ public class User {
 
     // Ny testbar metode, som kan kaldes direkte med userId
     public boolean readTransactionHistory(TransactionRepository transactionRepo, int userId) {
-        List<Transaction> userTransactions = transactionRepo.readTransactionsByUserId(userId);
+        List<Transaction> userTransactions = transactionRepo.getTransactionsByUserId(userId);
 
         if (userTransactions.isEmpty()) {
             System.out.println("No transactions found for this user.");
