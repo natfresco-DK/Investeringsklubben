@@ -14,7 +14,7 @@ public class Leaderboard {
             String transactionsFile
     ) {
         // Load users
-        CSVUserRepository userRepo = new CSVUserRepository(usersFile);
+        CSVUserRepository userRepo = new CSVUserRepository("InvesteringsKlub/CSVRepository/users.csv");
         List<User> users = new ArrayList<>(userRepo.getAllUsers());
 
         // Load stocks
@@ -38,7 +38,7 @@ public class Leaderboard {
             String transactionsFile
     ) {
         for (User u : users) {
-            Portfolio p = PortfolioBuilder.buildPortfolio(u, transactionsFile, stockRepo, transactionRepo);
+            Portfolio p = PortfolioBuilder.buildPortfolio(u, stockRepo, transactionRepo);
             u.setPortfolio(p);
         }
     }

@@ -1,5 +1,6 @@
 package Domain;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Transaction{
@@ -11,6 +12,7 @@ public class Transaction{
     protected String currency;
     protected OrderType orderType;
     protected int quantity;
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     public Transaction(){}
 
@@ -56,7 +58,7 @@ public class Transaction{
     public String toString() {
         return ID + ";"
                 + userID + ";"
-                + date + ";"
+                + sdf.format(date) + ";"
                 + ticker + ";"
                 + price + ";"
                 + currency + ";"

@@ -296,9 +296,9 @@ public class Portfolio {
         double value = 0.0;
         for (Holding h : holdings.values()) {
 
-            double oldPrice = h.getCurrentPriceDKk();
+            double oldPrice = h.getCurrentPriceDKK();
             h.updateCurrentPriceDKK();
-            double newPrice = h.getCurrentPriceDKk();
+            double newPrice = h.getCurrentPriceDKK();
 
             System.out.println("[OPDATERING] " + h.getTicker()
                     + " gammel pris: " + oldPrice
@@ -360,9 +360,6 @@ public class Portfolio {
         return percentage;
     }
 
-
-
-
     public String toString(StockRepository stockRepo) {
         StringBuilder sb = new StringBuilder();
         sb.append("Portefølje for ").append(owner.getFullName()).append("\n");
@@ -380,7 +377,7 @@ public class Portfolio {
                         .append(" stk | Købspris: ")
                         .append(h.getPurchasePriceDKK())
                         .append(" DKK | Nuværende pris: ")
-                        .append(h.getCurrentPriceDKk())
+                        .append(h.getCurrentPriceDKK())
                         .append(" DKK\n");
             }
         }

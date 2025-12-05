@@ -17,7 +17,7 @@ public class CSVTransactionRepository implements TransactionRepository {
     public void writeTransaction(Transaction trx) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append(trx.toString() + '\n');
+            writer.append('\n' + trx.toString() + '\n');
         } catch (IOException e) {
             e.printStackTrace();
         }

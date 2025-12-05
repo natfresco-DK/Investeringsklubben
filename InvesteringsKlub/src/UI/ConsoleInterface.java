@@ -1,5 +1,6 @@
 package UI;
 
+import CSVHandler.CSVUserRepository;
 import Domain.User;
 import CSVHandler.CSVStockRepository;
 import CSVHandler.CSVTransactionRepository;
@@ -8,11 +9,12 @@ import java.util.Scanner;
 public class ConsoleInterface {
     private CSVStockRepository stockRepo;
     private CSVTransactionRepository transactionRepo;
+    private CSVUserRepository userRepo;
     private User currentUser;
     private Scanner scanner;
 
-    public ConsoleInterface(User user, CSVStockRepository stockRepo, CSVTransactionRepository transactionRepo) {
-        this.currentUser = user;
+    public ConsoleInterface(CSVUserRepository userRepo, CSVStockRepository stockRepo, CSVTransactionRepository transactionRepo) {
+        this.userRepo = userRepo;
         this.stockRepo = stockRepo;
         this.transactionRepo = transactionRepo;
         this.scanner = new Scanner(System.in);
@@ -20,10 +22,14 @@ public class ConsoleInterface {
 
     public void start() {
         boolean exit = false;
+        System.out.println("Input user ID");
+        int userID = Integer.parseInt(scanner.nextLine());
+        setCurrentUser(userID);
+        System.out.println("Hello " + currentUser.getFullName());
+
         while (!exit) {
             showMainMenu();
             String choice = scanner.nextLine().trim();
-
             switch (choice) {
                 case "1":
                     showStockMarket();
@@ -81,6 +87,7 @@ public class ConsoleInterface {
         System.out.println("\n--- Transaction History ---");
         // Her skal du kunne læse transactions fra transactionRepo, filtreret på currentUser.getUserId()
         System.out.println("Feature: Print transactions for user ID " + currentUser.getUserId());
+        currentUser.readTransactionHistory(transactionRepo,currentUser.getUserId());
     }
 
     private void buyStock() {
@@ -99,5 +106,10 @@ public class ConsoleInterface {
         int qty = Integer.parseInt(scanner.nextLine().trim());
         boolean success = currentUser.getPortfolio().sellStock(ticker, qty, stockRepo, transactionRepo);
         if(success) System.out.println("Stock sold successfully!");
+    }
+
+    public void setCurrentUser(int userID) {
+        User currentUser = userRepo.getUserById(userID);
+        this.currentUser = currentUser;
     }
 }

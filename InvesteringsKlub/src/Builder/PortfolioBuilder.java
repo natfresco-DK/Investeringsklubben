@@ -1,12 +1,12 @@
 package Builder;
 import CSVHandler.*;
 import Domain.*;
-import java.io.*;
+
 import java.util.*;
 
 public class PortfolioBuilder {
 
-    public static Portfolio buildPortfolio(User user, String transactionsFile, StockRepository stockRepo,
+    public static Portfolio buildPortfolio(User user, StockRepository stockRepo,
                                            TransactionRepository transactionRepo) {
         Portfolio portfolio = new Portfolio(user, user.getInitialCashDKK());
 
@@ -36,7 +36,7 @@ public class PortfolioBuilder {
                     "- " + h.getTicker() +
                             ": " + h.getQuantity() + " stk. | " +
                             "Købspris: " + h.getPurchasePriceDKK() + " DKK | " +
-                            "Nuværende pris: " + h.getCurrentPriceDKk() + " DKK"
+                            "Nuværende pris: " + h.getCurrentPriceDKK() + " DKK"
             );
         }
 

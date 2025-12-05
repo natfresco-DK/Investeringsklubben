@@ -1,5 +1,6 @@
 package CSVHandler;
 
+import Builder.PortfolioBuilder;
 import Domain.User;
 
 import java.io.BufferedReader;
@@ -44,8 +45,13 @@ public class CSVUserRepository {
     public User getUserById(int id) {
         return users.get(id);
     }
-
     public Collection<User> getAllUsers() {
         return users.values();
+    }
+
+    public void addUsersPortfolio(StockRepository stockRepo, TransactionRepository transactionRepo){
+        for(User user : users.values()){
+            user.setPortfolio(PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo));
+        }
     }
 }
