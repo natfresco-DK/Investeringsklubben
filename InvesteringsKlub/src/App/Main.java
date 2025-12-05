@@ -6,7 +6,7 @@ import UI.ConsoleInterface;
 import java.util.List;
 
 public class Main {
-    public static void main (String[] args){
+    public static void main(String[] args) {
         System.out.println("Starter programmet...");
         
         // Load users and assign portfolios

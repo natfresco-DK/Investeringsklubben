@@ -22,4 +22,34 @@ public class PortfolioBuilder {
 
         return portfolio;
     }
+
+    public static void printPortfolio(User user, StockRepository stockRepo) {
+        Portfolio portfolio = user.getPortfolio();
+
+        System.out.println("\n===== PORTFØLJE FOR " + user.getFullName() + " =====");
+
+        System.out.println("Kontantbeholdning: " + portfolio.getCashBalance() + " DKK");
+        System.out.println("\nAktiebeholdninger:");
+
+        for (Holding h : portfolio.getHoldings().values()) {
+            System.out.println(
+                    "- " + h.getTicker() +
+                            ": " + h.getQuantity() + " stk. | " +
+                            "Købspris: " + h.getPurchasePriceDKK() + " DKK | " +
+                            "Nuværende pris: " + h.getCurrentPriceDKk() + " DKK"
+            );
+        }
+
+        System.out.println("\nSamlet investeret: " + portfolio.calculateTotalInvestedDKK());
+        System.out.println("Samlet nuværende værdi: " + portfolio.calculateCurrentHoldingsValueDKK(stockRepo));
+        System.out.println("Reelt afkast: " + portfolio.calculateRealReturnDKK(stockRepo));
+        System.out.println("Afkast i procent: " + portfolio.calculateReturnPercentage(stockRepo) + "%");
+    }
+
+
+
+
+
+
+
 }

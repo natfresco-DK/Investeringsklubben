@@ -15,6 +15,7 @@ public class Holding {
         this.quantity = quantity;
         this.purchasePriceDKK = purchasePriceDKK;
         this.currentPriceDKK = purchasePriceDKK; // initially same as purchase
+
     }
 
     public String getTicker() {
@@ -49,8 +50,14 @@ public class Holding {
         this.purchasePriceDKK = purchasePriceDKK;
     }
 
+
     public void updateCurrentPriceDKK(){
         Stock stock = stockRepo.getStockByTicker(ticker);
         this.currentPriceDKK = stock.getPrice();
     }
+
+
+
+
+
 }
