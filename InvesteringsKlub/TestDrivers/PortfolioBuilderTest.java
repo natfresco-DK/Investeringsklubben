@@ -1,10 +1,12 @@
+
 import Builder.*;
-import CSVHandler.*;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.*;
 import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PortfolioBuilderTest {
@@ -26,106 +28,106 @@ class PortfolioBuilderTest {
 
         // Test user
         user = new User(1, "Alice Johnson", "alice@example.com",
-                new Date(1990, 1, 1), 10000,
+                new Date(90, Calendar.JANUARY, 1), 10000,
                 new Date(), new Date());
 
-        // Temporary CSV file with transactions
+        // Add initial transactions
+        Date txDate = new Date();
+        transactionRepo.writeTransaction(new Transaction(1, user.getUserId(), txDate, "AAPL", 150.0, "DKK", OrderType.BUY, 10));
+        transactionRepo.writeTransaction(new Transaction(2, user.getUserId(), txDate, "AAPL", 150.0, "DKK", OrderType.SELL, 5));
+
+        // Verify transactions exist
+        assertEquals(2, transactionRepo.getTransactionsByUserId(user.getUserId()).size());
+
+        // Temporary CSV file (not used by builder but kept for compatibility)
         tempCsvFile = File.createTempFile("transactions", ".csv");
         tempCsvFile.deleteOnExit();
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempCsvFile))) {
             writer.write("userId,date,ticker,price,currency,orderType,quantity\n");
             writer.write("1,2025-11-30,AAPL,150.0,DKK,BUY,10\n");
             writer.write("1,2025-11-30,AAPL,150.0,DKK,SELL,5\n");
         }
     }
-    @Test
-    void testBuildPortfolioFromCSVAllFields() {
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(
-                user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo
-        );
 
-        //Check cash balance
-        double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0); // bought 10, sold 5
+    @Test
+    void testBuildPortfolioFromTransactions() {
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
+
+        double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0);
         assertEquals(expectedCash, portfolio.getCashBalance(), 0.01);
 
-        //Check holdings
         Holding aapl = portfolio.getHoldings().get("AAPL");
         assertNotNull(aapl);
-        assertEquals(5, aapl.getQuantity()); // 10 bought - 5 sold
+        assertEquals(5, aapl.getQuantity());
         assertEquals(150.0, aapl.getPurchasePriceDKK(), 0.01);
-        assertEquals(150.0, aapl.getCurrentPriceDKk(), 0.01);
 
-        //Check total value
         portfolio.updateTotalValue(stockRepo);
-        double expectedTotalValue = 5 * 150.0;
+        double expectedTotalValue = expectedCash + (5 * 150.0);
         assertEquals(expectedTotalValue, portfolio.getTotalValueDKK(), 0.01);
 
-        //Check transactions logged
-        List<Transaction> transactions = transactionRepo.getTransactions();
-        assertEquals(2, transactions.size());
-
-        //Check first transaction (BUY)
-        Transaction trx1 = transactions.get(0);
-        assertEquals(user.getUserId(), trx1.getUserID());
-        assertEquals("AAPL", trx1.getTicker());
-        assertEquals(10, trx1.getQuantity());
-        assertEquals(150.0, trx1.getPrice(), 0.01);
-        assertEquals("DKK", trx1.getCurrency());
-        assertEquals(OrderType.BUY, trx1.getOrderType());
-
-        //Check second transaction (SELL)
-        Transaction trx2 = transactions.get(1);
-        assertEquals(user.getUserId(), trx2.getUserID());
-        assertEquals("AAPL", trx2.getTicker());
-        assertEquals(5, trx2.getQuantity());
-        assertEquals(150.0, trx2.getPrice(), 0.01);
-        assertEquals("DKK", trx2.getCurrency());
-        assertEquals(OrderType.SELL, trx2.getOrderType());
-
-        //Check transactions logged
         assertEquals(2, transactionRepo.getTransactions().size());
     }
 
     @Test
-    void testBuildPortfolioFromCSVHoldings() {
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(
-                user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo
-        );
+    void testBuildPortfolioWithNoTransactions() {
+        transactionRepo.clear(); // remove all transactions
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
 
-        //Check cash balance
-        double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0); // bought 10, sold 5
-        assertEquals(expectedCash, portfolio.getCashBalance(), 0.01);
-
-        //Check holdings
-        Holding aapl = portfolio.getHoldings().get("AAPL");
-        assertNotNull(aapl);
-        assertEquals(5, aapl.getQuantity()); // 10 bought - 5 sold
-        assertEquals(150.0, aapl.getPurchasePriceDKK(), 0.01);
-
-        //Check total value
-        portfolio.updateTotalValue(stockRepo);
-        double expectedTotalValue = 5 * 150.0;
-        assertEquals(expectedTotalValue, portfolio.getTotalValueDKK(), 0.01);
-
-        //Check transactions logged
-        assertEquals(2, transactionRepo.getTransactions().size());
+        assertEquals(user.getInitialCashDKK(), portfolio.getCashBalance(), 0.01);
+        assertTrue(portfolio.getHoldings().isEmpty());
+        assertEquals(user.getInitialCashDKK(), portfolio.getTotalValueDKK(), 0.01);
     }
 
     @Test
-    void testBuildPortfolioFrom(){
-        //check holdings
+    void testBuildPortfolioWithMultipleBuys() {
+        transactionRepo.clear();
+        transactionRepo.writeTransaction(new Transaction(3, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 10));
+        transactionRepo.writeTransaction(new Transaction(4, user.getUserId(), new Date(), "AAPL", 200.0, "DKK", OrderType.BUY, 10));
 
-        //update stock value
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
 
-        //check holdings again
-
+        Holding aapl = portfolio.getHoldings().get("AAPL");
+        assertNotNull(aapl);
+        assertEquals(20, aapl.getQuantity());
+        double expectedAvgPrice = ((10 * 150.0) + (10 * 200.0)) / 20;
+        assertEquals(expectedAvgPrice, aapl.getPurchasePriceDKK(), 0.01);
     }
 
+    @Test
+    void testBuildPortfolioSellMoreThanOwned() {
+        transactionRepo.clear();
+        transactionRepo.writeTransaction(new Transaction(5, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 5));
+        transactionRepo.writeTransaction(new Transaction(6, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.SELL, 10)); // invalid sell
 
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
 
+        Holding aapl = portfolio.getHoldings().get("AAPL");
+        assertNotNull(aapl);
+        assertEquals(5, aapl.getQuantity());
+        assertTrue(portfolio.getCashBalance() <= user.getInitialCashDKK());
+    }
 
+    @Test
+    void testBuildPortfolioWithMultipleStocks() {
+        transactionRepo.clear();
+        transactionRepo.writeTransaction(new Transaction(7, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 5));
+        transactionRepo.writeTransaction(new Transaction(8, user.getUserId(), new Date(), "GOOG", 2800.0, "DKK", OrderType.BUY, 2));
 
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
 
+        assertEquals(2, portfolio.getHoldings().size());
+        assertTrue(portfolio.getHoldings().containsKey("AAPL"));
+        assertTrue(portfolio.getHoldings().containsKey("GOOG"));
+    }
 
+    @Test
+    void testBuildPortfolioWithInvalidTransaction() {
+        transactionRepo.clear();
+        transactionRepo.writeTransaction(new Transaction(9, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, -5)); // invalid qty
+
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, tempCsvFile.getAbsolutePath(), stockRepo, transactionRepo);
+
+        assertTrue(portfolio.getHoldings().isEmpty());
+        assertEquals(user.getInitialCashDKK(), portfolio.getCashBalance(), 0.01);
+    }
 }

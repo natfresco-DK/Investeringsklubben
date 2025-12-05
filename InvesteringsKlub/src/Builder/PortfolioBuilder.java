@@ -6,21 +6,18 @@ import java.util.*;
 
 public class PortfolioBuilder {
 
-    public static Portfolio buildPortfolio(User user, String transactionsFile,
-                                           StockRepository stockRepo,
+    public static Portfolio buildPortfolio(User user, String transactionsFile, StockRepository stockRepo,
                                            TransactionRepository transactionRepo) {
         Portfolio portfolio = new Portfolio(user, user.getInitialCashDKK());
 
-        //Load Transactions for this user
-        List<Transaction> transactions = transactionRepo.getTransactionsByUserId(user.getUserId());
+        List<Transaction> transactions = new ArrayList<>(
+                    transactionRepo.getTransactionsByUserId(user.getUserId()));
 
-        //Sort Chronologically
-        transactions.sort(Comparator.comparing(Transaction::getID));
+        transactions.sort(Comparator.comparing(Transaction::getDate));
 
-        //rebuild holdings from transactions
-        portfolio.rebuildHoldingsfromTransactions(transactionRepo,stockRepo);
+        portfolio.rebuildHoldingsfromTransactions(transactions, stockRepo);
 
-        //Update total value after all transactions
+        // Update portfolio totals
         portfolio.updateTotalValue(stockRepo);
 
         return portfolio;
