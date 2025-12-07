@@ -11,10 +11,10 @@ public class Main {
         StockRepository stockRepo = new CSVStockRepository();
 
         //Load Transaction repo
-        CSVTransactionRepository transactionRepo = new CSVTransactionRepository();
+        TransactionRepository transactionRepo = new CSVTransactionRepository();
 
         //Load User repo
-        CSVUserRepository userRepo = new CSVUserRepository();
+        UserRepository userRepo = new CSVUserRepository();
 
         //Regenerate Users Portfolio from transactions
         userRepo.addUsersPortfolio(stockRepo,transactionRepo);

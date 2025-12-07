@@ -27,7 +27,7 @@ class TransactionTest {
                 1,
                 "Alice Johnson",
                 "alice@example.com",
-                new Date(1990, 1, 1),
+                new Date(1990, Calendar.JANUARY, 1),
                 10000,
                 new Date(),
                 new Date()
@@ -46,7 +46,7 @@ class TransactionTest {
         boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
         assertTrue(result);
 
-        List<Transaction> transactions = transactionRepo.getTransactions();
+        List<Transaction> transactions = transactionRepo.getAllTransactions();
         assertEquals(1, transactions.size());
 
         Transaction trx = transactions.get(0);
@@ -63,7 +63,7 @@ class TransactionTest {
         boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo);
         assertTrue(result);
 
-        List<Transaction> transactions = transactionRepo.getTransactions();
+        List<Transaction> transactions = transactionRepo.getAllTransactions();
         assertEquals(2, transactions.size());
 
         Transaction sellTrx = transactions.get(1);

@@ -306,12 +306,24 @@ public class Portfolio {
 
     // Samlet nuværende værdi af alle holdings i DKK (antal * nuværende pris).
     // Opdaterer samtidig currentPriceDKK på hver holding ud fra stockRepo.
+
     public double calculateCurrentHoldingsValueDKK(StockRepository stockRepo) {
         double value = 0.0;
-        for (Holding h : holdings.values()) {
 
+        for (Holding h : holdings.values()) {
             double oldPrice = h.getCurrentPriceDKK();
-            h.updateCurrentPriceDKK();
+
+            if (stockRepo != null) {
+                Stock s = stockRepo.getStockByTicker(h.getTicker());
+                if (s != null) {
+                    h.setCurrentPriceDKK(s.getPrice());
+                } else {
+                    h.setCurrentPriceDKK(h.getPurchasePriceDKK());
+                }
+            } else {
+                h.setCurrentPriceDKK(h.getPurchasePriceDKK());
+            }
+
             double newPrice = h.getCurrentPriceDKK();
 
             System.out.println("[OPDATERING] " + h.getTicker()
@@ -326,11 +338,13 @@ public class Portfolio {
 
             value += holdingValue;
         }
+
         System.out.println("[HOLDINGS VÆRDI TOTAL] " + value + " DKK\n");
         return value;
     }
 
-     //Samlet porteføljeværdi inkl. kontantbeholdning.
+
+    //Samlet porteføljeværdi inkl. kontantbeholdning.
      public double calculatePortfolioValueIncludingCashDKK(StockRepository stockRepo) {
          double holdingsValue = calculateCurrentHoldingsValueDKK(stockRepo);
          double total = holdingsValue + cashBalance;

@@ -87,7 +87,7 @@ public class ConsoleInterface {
     private void showTransactions() {
         System.out.println("\n--- Transaction History ---");
         System.out.println("Print transactions for user " + currentUser.getFullName());
-        currentUser.readTransactionHistory(transactionRepo,currentUser.getUserId());
+        currentUser.printTransactionHistory(transactionRepo,currentUser.getUserId());
     }
 
     private void buyStock() {

@@ -1,34 +1,30 @@
-import CSVHandler.CSVStockRepository;
+
 import CSVHandler.StockRepository;
 import Domain.Stock;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class InMemoryStockRepository implements StockRepository {
-
     private final Map<String, Stock> stocks = new HashMap<>();
 
-    public void addStock(Stock stock) {
-        stocks.put(stock.getTicker(), stock);
+    private static String norm(String key) {
+        return key == null ? null : key.toLowerCase(Locale.ROOT);
     }
 
-    @Override
-    public void clear() {
+    public void addStock(Stock stock) {
+        stocks.put(norm(stock.getTicker()), stock);
     }
 
     @Override
     public List<Stock> getAllStocks() {
-        return List.of();
+        return new ArrayList<>(stocks.values());
     }
 
     @Override
     public Stock getStockByTicker(String ticker) {
-        return stocks.get(ticker);
-    }
-
-    public void loadFromCSV(String filePath) {
-        CSVStockRepository repo = new CSVStockRepository();
+        return stocks.get(norm(ticker));
     }
 }
