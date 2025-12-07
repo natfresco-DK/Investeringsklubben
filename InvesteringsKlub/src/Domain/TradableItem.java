@@ -12,18 +12,18 @@ public abstract class TradableItem {
         this.currency = currency;
     }
 
+    //Getters
     public double getPrice() {
         return price;
     }
-
     public String getCurrency() {
         return currency;
     }
-
     public String getTicker() {
         return ticker;
     }
 
+    //Setters
     public void setPrice(double price) {
         this.price = price;
     }

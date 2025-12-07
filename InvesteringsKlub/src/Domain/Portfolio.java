@@ -42,6 +42,7 @@ public class Portfolio {
         put(key,holding);
         updateTotalValue(stockRepo);
     }
+
     public void removeHolding(String ticker, StockRepository stockRepo){
         String key = norm(ticker);
         remove(key);
@@ -138,6 +139,8 @@ public class Portfolio {
 
         return true;
     }
+
+
     private void updateHolding(String ticker, int qty, double price, boolean isBuy, StockRepository stockRepo) {
         String key = norm(ticker);
         Holding holding = getHoldings().get(key);
