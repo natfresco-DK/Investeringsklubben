@@ -22,3 +22,7 @@ id;user_id;date;ticker;price;currency;order_type;quantity
 21;1;01-03-2025;NOVO-B;715;DKK;sell;20
 22;2;02-03-2025;VWS;200;DKK;sell;5023;
 23;1;05-04-2025;NOVO-B;710.0;DKK;BUY;10
+
+24;1;07-12-2025;JYSK;453.0;DKK;BUY;20
+
+25;1;07-12-2025;JYSK;453.0;DKK;SELL;10

@@ -1,8 +1,18 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# IntelliJ HTTP client & data sources (you already had these)
+shelf/
+workspace.xml
+httpRequests/
+dataSources/
+dataSources.local.xml
+
+# Build output (IntelliJ default for non-Gradle/Maven)
+out/
+
+# Common build folders for popular tools
+build/        # Gradle
+target/       # Maven
+bin/          # Some Java/Kotlin setups
