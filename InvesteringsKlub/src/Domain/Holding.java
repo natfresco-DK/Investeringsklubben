@@ -18,46 +18,37 @@ public class Holding {
 
     }
 
+    //Getters
     public String getTicker() {
         return ticker;
     }
-
     public int getQuantity() {
         return quantity;
     }
-
     public double getPurchasePriceDKK() {
         return purchasePriceDKK;
     }
-
     public double getCurrentPriceDKK() {
         return currentPriceDKK;
     }
 
+    //Setters
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
     public void setTicker(String ticker) {
         this.ticker = ticker;
     }
-
     public void setCurrentPriceDKK(double currentPriceDKK) {
         this.currentPriceDKK = currentPriceDKK;
     }
-
     public void setPurchasePriceDKK(double purchasePriceDKK) {
         this.purchasePriceDKK = purchasePriceDKK;
     }
 
-
+    //Update stock price from stock repository
     public void updateCurrentPriceDKK(){
         Stock stock = stockRepo.getStockByTicker(ticker);
         this.currentPriceDKK = stock.getPrice();
     }
-
-
-
-
-
 }

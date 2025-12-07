@@ -29,17 +29,6 @@ public class CSVStockRepository implements StockRepository {
         return new ArrayList<>(stocks);
     }
 
-    /*
-    public Stock getStockByTicker(String ticker){
-        Stock stock = new Stock();
-        for (Stock s : stocks){
-            if(ticker == s.getTicker())
-                stock = s;
-        }
-        return stock;
-    }
-
-     */
     public Stock getStockByTicker(String ticker) {
         if (ticker == null) return null;
         for (Stock s : stocks) {

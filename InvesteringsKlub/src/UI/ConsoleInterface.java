@@ -44,7 +44,7 @@ public class ConsoleInterface {
                     buyStock();
                     break;
                 case "5":
-                    showStockMarket();
+                    showPortfolio();
                     sellStock();
                     break;
                 case "0":
@@ -81,13 +81,12 @@ public class ConsoleInterface {
         currentUser.getPortfolio().getHoldings().forEach((ticker, holding) ->
                 System.out.println(ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKK())
         );
-        System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
+        System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK" + "\n");
     }
 
     private void showTransactions() {
         System.out.println("\n--- Transaction History ---");
-        // Her skal du kunne læse transactions fra transactionRepo, filtreret på currentUser.getUserId()
-        System.out.println("Feature: Print transactions for user ID " + currentUser.getUserId());
+        System.out.println("Print transactions for user " + currentUser.getFullName());
         currentUser.readTransactionHistory(transactionRepo,currentUser.getUserId());
     }
 
@@ -97,7 +96,11 @@ public class ConsoleInterface {
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
         boolean success = currentUser.getPortfolio().buyStock(ticker, qty, stockRepo, transactionRepo);
-        if(success) System.out.println("Stock bought successfully!");
+        if(success){
+            System.out.println("Stock bought successfully!");
+        } else {
+            System.out.println("Stock not bought");
+        }
     }
 
     private void sellStock() {
