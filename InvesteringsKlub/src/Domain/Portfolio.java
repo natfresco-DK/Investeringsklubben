@@ -17,40 +17,38 @@ public class Portfolio {
         this.cashBalance = cashBalance;
         totalValueDKK = cashBalance;
     }
-
+    // Getters
     public double getTotalValueDKK() {
         return totalValueDKK;
     }
-
     public double getCashBalance() {
         return cashBalance;
     }
-
-    public void setCashBalance(double cashBalance) {
-        this.cashBalance = cashBalance;
-    }
-
     public User getOwner() {
         return owner;
     }
-
     public HashMap<String,Holding> getHoldings() {
         return holdings;
     }
 
+    //Setters
+    public void setCashBalance(double cashBalance) {
+        this.cashBalance = cashBalance;
+    }
+
+    //Holdings
     public void addHolding(Holding holding, StockRepository stockRepo) {
         holdings.put(holding.getTicker(),holding);
         updateTotalValue(stockRepo);
     }
-
     public void removeHolding(String ticker, StockRepository stockRepo){
         holdings.remove(ticker);
         updateTotalValue(stockRepo);
     }
 
+    //Update portfolio total value including cash balance
     public void updateTotalValue(StockRepository stockRepo){
         double holdingsValue = 0.0;
-
         for (Holding h : holdings.values()) {
             if (stockRepo != null) {
                 Stock s = stockRepo.getStockByTicker(h.getTicker());
@@ -68,14 +66,13 @@ public class Portfolio {
         this.totalValueDKK = holdingsValue + getCashBalance();
     }
 
+    //Executing trades
     public boolean buyStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
         return executeTrade(ticker, qty, OrderType.BUY, stockRepo, transactionRepo);
     }
-
     public boolean sellStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
         return executeTrade(ticker, qty, OrderType.SELL, stockRepo, transactionRepo);
     }
-
     private boolean executeTrade(String ticker, int qty, OrderType orderType,
                                  StockRepository stockRepo, TransactionRepository transactionRepo) {
 
@@ -125,8 +122,6 @@ public class Portfolio {
 
         return true;
     }
-
-
     private void updateHolding(String ticker, int qty, double price, boolean isBuy, StockRepository stockRepo) {
         Holding holding = getHoldings().get(ticker);
         if (isBuy) {
@@ -134,7 +129,7 @@ public class Portfolio {
                 // New holding with initial purchase price
                 holding = new Holding(ticker, qty, price);
             } else {
-                // Weighted average purchase price for BUY
+                // BUY: Weighted average purchase price
                 int oldQty = holding.getQuantity();
                 double oldAvgPrice = holding.getPurchasePriceDKK();
                 int newQty = oldQty + qty;
@@ -156,7 +151,7 @@ public class Portfolio {
         }
     }
 
-
+    //Rebuilding holdings from transactions
     public void rebuildHoldingsfromTransactions(List<Transaction> transactions, StockRepository stockRepo) {
         holdings.clear();
         // Use owner's initial cash
@@ -245,6 +240,7 @@ public class Portfolio {
         this.totalValueDKK = this.cashBalance + holdingsValue;
     }
 
+    //Print Holdings
     public void printHoldings() {
         System.out.println("Holdings for user: " + owner.getFullName());
 
@@ -272,10 +268,7 @@ public class Portfolio {
         System.out.println();
     }
 
-
-
-
-    //Samlet investeret beløb i DKK (antal * købspris).
+    //Samlet investeret beløb i DKK (antal * købspris)
      public double calculateTotalInvestedDKK() {
          double total = 0.0;
          for (Holding h : holdings.values()) {
@@ -327,7 +320,6 @@ public class Portfolio {
 
          return total;
      }
-
 
      //Reelt afkast i DKK (nuværende værdi inkl. kontanter minus investeret beløb).
      public double calculateRealReturnDKK(StockRepository stockRepo) {

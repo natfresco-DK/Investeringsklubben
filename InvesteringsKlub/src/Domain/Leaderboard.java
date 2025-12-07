@@ -14,16 +14,14 @@ public class Leaderboard {
             String transactionsFile
     ) {
         // Load users
-        CSVUserRepository userRepo = new CSVUserRepository("InvesteringsKlub/CSVRepository/users.csv");
+        CSVUserRepository userRepo = new CSVUserRepository();
         List<User> users = new ArrayList<>(userRepo.getAllUsers());
 
         // Load stocks
         StockRepository stockRepo = new CSVStockRepository();
-        ((CSVStockRepository) stockRepo).loadFromCSV(stocksFile);
 
         // Load transactions
         TransactionRepository transactionRepo = new CSVTransactionRepository();
-        ((CSVTransactionRepository) transactionRepo).loadFromCSV(transactionsFile);
 
         // Assign portfolios
         assignPortfolios(users, stockRepo, transactionRepo, transactionsFile);
