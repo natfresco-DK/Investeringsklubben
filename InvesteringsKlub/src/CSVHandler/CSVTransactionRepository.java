@@ -1,13 +1,10 @@
 package CSVHandler;
 
 import Domain.Transaction;
-
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
-
 import Domain.OrderType;
-
 import java.text.SimpleDateFormat;
 
 
@@ -23,8 +20,24 @@ public class CSVTransactionRepository implements TransactionRepository {
     //writers
     public void writeTransaction(Transaction trx) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
-        try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append(trx.toString() + '\n');
+        File file = new File(filePath);
+        boolean fileExists = file.exists();
+
+        try (FileWriter writer = new FileWriter(file, true)) {
+            // skriv header hvis filen ikke findes eller er tom
+            if (!fileExists || file.length() == 0) {
+                writer.append("ID;UserID;Date;Ticker;Price;Currency;Type;Quantity\n");
+            }
+
+            // Gem i korrekt CSV-format, ikke trx.toString()
+            writer.append(trx.getID() + ";" +
+                    trx.getUserID() + ";" +
+                    new SimpleDateFormat("dd-MM-yyyy").format(trx.getDate()) + ";" +
+                    trx.getTicker() + ";" +
+                    trx.getPrice() + ";" +
+                    trx.getCurrency() + ";" +
+                    trx.getOrderType().name() + ";" +
+                    trx.getQuantity() + "\n");
             transactions.add(trx);
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,7 +49,6 @@ public class CSVTransactionRepository implements TransactionRepository {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         int nextId = 1; //Default if file is empty
         String lastLine = null;
-
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String raw;
             while ((raw = br.readLine()) != null) {
@@ -49,7 +61,6 @@ public class CSVTransactionRepository implements TransactionRepository {
             //If file not found, empty or unreadable, we start from 1
             return nextId;
         }
-
         if (lastLine != null) {
             String[] parts = splitSemicolonTrim(lastLine);
             if (parts.length > 0) {
@@ -63,7 +74,6 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
         return nextId;
     }
-
     public List<Transaction> getTransactionsByUserId(int userId) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         List<Transaction> result = new ArrayList<>();
@@ -107,7 +117,6 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
-
     public List<Transaction> getAllTransactions() {
         loadTransactions(filePath);
         return transactions;
@@ -118,12 +127,12 @@ public class CSVTransactionRepository implements TransactionRepository {
         // Primary parser matches Date.toString() like: Tue Dec 02 23:24:40 CET 2025
         SimpleDateFormat primarySdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
         // Add common CSV date formats as fallbacks
+        SimpleDateFormat dashSdf = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat slashSdf = new SimpleDateFormat("dd/MM/yyyy");
         // Older code used space-separated day month year
         SimpleDateFormat spaceSdf = new SimpleDateFormat("dd MM yyyy");
         // ISO with timezone
         SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String raw;
@@ -177,6 +186,7 @@ public class CSVTransactionRepository implements TransactionRepository {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return transactions;
 
     }*/
@@ -219,7 +229,6 @@ public class CSVTransactionRepository implements TransactionRepository {
             System.out.println("Error reading CSV file: " + filePath);
             e.printStackTrace();
         }
-
     }
 
     //helpers
