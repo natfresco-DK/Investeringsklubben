@@ -12,16 +12,19 @@ User inputs user ID
 hello user name
 
 === User Menu ===
-1. View Stock Market
- - calls stock market method
+1. View Stock or Bond Market
+ - either calls stock market method
+ - or calls bond market method
 2. View Portfolio
  - calls view user portfolio method
 3. View Transaction History
  - calls view user transaction history
-4. Buy Stock
+4. Buy Stock or Bond
  - calls buy stock method
-5. Sell Stock
+ - or calls buy bond method
+5. Sell Stock or Bond
  - calls sell stock method
+ - or calls sell bond method
 0. Exit
  - closes application
 Choose an option: 
@@ -29,20 +32,21 @@ Choose an option:
 
 "Leader menu"
 === Leader Menu ===
-1. View Stock Market
- - calls stock market method
+1. View Stock or bond Market
+- calls stock market method
+- or calls bond market
 2. View List of Members Portfolios
- - calls view List of users portfolio method
+- calls view List of users portfolio method
 3. View Transaction History
- - calls view user transaction history
+- calls view user transaction history
 4. View most Bought stock
  - Calls view most bought stock
 5. View most Sold stocks
- - Calls view most sold stock
+- Calls view most sold stock
 6. View Stocks sorted by most bought
  - calls view stocks by most bought method
 7. View most sold stocks by sectors
  - calls view all stocks by sectors method
 0. Exit
- - closes application
+- closes application
 Choose an option:
