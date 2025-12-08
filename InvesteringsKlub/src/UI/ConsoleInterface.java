@@ -142,10 +142,21 @@ public class ConsoleInterface {
     private void showPortfolio() {
         System.out.println("\n--- Portfolio ---");
         System.out.println("Cash: " + currentUser.getPortfolio().getCashBalance() + " DKK");
-        currentUser.getPortfolio().getHoldings().forEach((ticker, holding) ->
-                System.out.println(ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKK())
-        );
-        System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
+        currentUser.getPortfolio().getHoldings().forEach((ticker, holding) -> {
+                double percentChange = 0.0;
+
+                if (holding.getPurchasePriceDKK() > 0) {
+                    percentChange =
+                            ((holding.getCurrentPriceDKK() - holding.getPurchasePriceDKK())
+                                    / holding.getPurchasePriceDKK()) * 100.0;
+                }
+                System.out.println(ticker + " | Qty: " + holding.getQuantity() +
+                        " | Current Price DKK: " + holding.getCurrentPriceDKK() +
+                        " | Purchase Price DKK: " + holding.getPurchasePriceDKK() +
+                        " | Percent " + String.format("%.2f", percentChange) + "%"
+                );
+            });
+                System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
     }
 
     // ----------------------------

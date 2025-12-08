@@ -16,10 +16,10 @@ public class Leaderboard {
 
         // Load repositories
         CSVStockRepository stockRepo = new CSVStockRepository();
-        stockRepo.loadFromCSV(stocksFile);
+        stockRepo.loadStocks(stocksFile);
 
         CSVTransactionRepository transactionRepo = new CSVTransactionRepository();
-        transactionRepo.loadFromCSV(transactionsFile);
+        transactionRepo.loadTransactions(transactionsFile);
 
         // Assign portfolios to users
         userRepo.addUsersPortfolio(stockRepo, transactionRepo);

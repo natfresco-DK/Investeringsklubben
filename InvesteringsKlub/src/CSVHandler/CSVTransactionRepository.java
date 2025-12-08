@@ -192,7 +192,7 @@ public class CSVTransactionRepository implements TransactionRepository {
     }*/
 
     //load transaction
-    private void loadTransactions(String filePath) {
+    public void loadTransactions(String filePath) {
         transactions.clear(); // Clear existing transactions
 
 
