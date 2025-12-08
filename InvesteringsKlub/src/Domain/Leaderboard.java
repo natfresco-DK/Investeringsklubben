@@ -9,17 +9,15 @@ import java.util.List;
 public class Leaderboard {
 
     public static void printAllPortfolios(
-            CSVUserRepository userRepo,
-            String stocksFile,
-            String transactionsFile
+            UserRepository userRepo
     ) {
 
         // Load repositories
         CSVStockRepository stockRepo = new CSVStockRepository();
-        stockRepo.loadStocks(stocksFile);
+        stockRepo.getAllStocks();
 
         CSVTransactionRepository transactionRepo = new CSVTransactionRepository();
-        transactionRepo.loadTransactions(transactionsFile);
+        transactionRepo.getAllTransactions();
 
         // Assign portfolios to users
         userRepo.addUsersPortfolio(stockRepo, transactionRepo);

@@ -36,7 +36,7 @@ public class CSVStockRepository implements StockRepository {
     }
 
     // Load stocks
-    public void loadStocks(String filePath) {
+    private void loadStocks(String filePath) {
         stocks.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String raw;

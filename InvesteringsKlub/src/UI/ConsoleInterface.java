@@ -100,11 +100,7 @@ public class ConsoleInterface {
                 case "1": showStockMarket(); break;
                 case "2": CSVUserRepository repo = new CSVUserRepository();
 
-                    Leaderboard.printAllPortfolios(
-                            repo,
-                            "InvesteringsKlub/CSVRepository/stockMarket.csv",
-                            "InvesteringsKlub/CSVRepository/transactions.csv"
-                    );break;
+                    Leaderboard.printAllPortfolios(repo);break;
                 case "3": viewTransactionHistoryForUser(); break;
                 case "4": viewMostBoughtStock(); break;
                 case "5": viewMostSoldStock(); break;
