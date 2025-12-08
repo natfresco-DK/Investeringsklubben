@@ -1,19 +1,19 @@
 package UI;
 
-import CSVHandler.CSVUserRepository;
+import CSVHandler.UserRepository;
+import CSVHandler.TransactionRepository;
+import CSVHandler.StockRepository;
 import Domain.User;
-import CSVHandler.CSVStockRepository;
-import CSVHandler.CSVTransactionRepository;
 import java.util.Scanner;
 
 public class ConsoleInterface {
-    private CSVStockRepository stockRepo;
-    private CSVTransactionRepository transactionRepo;
-    private CSVUserRepository userRepo;
+    private StockRepository stockRepo;
+    private TransactionRepository transactionRepo;
+    private UserRepository userRepo;
     private User currentUser;
     private Scanner scanner;
 
-    public ConsoleInterface(CSVUserRepository userRepo, CSVStockRepository stockRepo, CSVTransactionRepository transactionRepo) {
+    public ConsoleInterface(UserRepository userRepo, StockRepository stockRepo, TransactionRepository transactionRepo) {
         this.userRepo = userRepo;
         this.stockRepo = stockRepo;
         this.transactionRepo = transactionRepo;
@@ -88,7 +88,7 @@ public class ConsoleInterface {
         System.out.println("\n--- Transaction History ---");
         // Her skal du kunne læse transactions fra transactionRepo, filtreret på currentUser.getUserId()
         System.out.println("Feature: Print transactions for user ID " + currentUser.getUserId());
-        currentUser.readTransactionHistory(transactionRepo,currentUser.getUserId());
+        currentUser.printTransactionHistory(transactionRepo,currentUser.getUserId());
     }
 
     private void buyStock() {

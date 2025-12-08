@@ -8,15 +8,15 @@ import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CSVUserRepository {
+public class CSVUserRepository implements UserRepository{
 
     private Map<Integer, User> users = new HashMap<>();
     private SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 
-    public CSVUserRepository(String filePath) {
-        loadUsers(filePath);
-    }
 
+    public CSVUserRepository(){
+        loadUsers("InvesteringsKlub/CSVRepository/users.csv");
+    }
     private void loadUsers(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // skip header
@@ -40,15 +40,12 @@ public class CSVUserRepository {
             e.printStackTrace();
         }
     }
-
-
     public User getUserById(int id) {
         return users.get(id);
     }
     public Collection<User> getAllUsers() {
         return users.values();
     }
-
     public void addUsersPortfolio(StockRepository stockRepo, TransactionRepository transactionRepo){
         for(User user : users.values()){
             user.setPortfolio(PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo));

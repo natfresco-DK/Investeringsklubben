@@ -1,11 +1,7 @@
 package CSVHandler;
 
-import Domain.Stock;
 import Domain.Transaction;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
 import Domain.OrderType;
@@ -14,6 +10,9 @@ import java.text.SimpleDateFormat;
 
 public class CSVTransactionRepository implements TransactionRepository {
 
+    public CSVTransactionRepository(){
+        loadTransactions("InvesteringsKlub/CSVRepository/transactions.csv");
+    }
     public void writeTransaction(Transaction trx) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         try (FileWriter writer = new FileWriter(filePath, true)) {
@@ -22,7 +21,6 @@ public class CSVTransactionRepository implements TransactionRepository {
             e.printStackTrace();
         }
     }
-
     public int getNextTransactionId() {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
         int nextId = 1; //Default if file is empty
@@ -98,36 +96,6 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
-    public void loadFromCSV(String filePath) {
-        ArrayList<Object> transactions = new ArrayList<>(); // Clear existing transactions
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine(); // skip header
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] fields = line.split(";");
-                if (fields.length < 8) continue;
-
-                int id = Integer.parseInt(fields[0].trim());
-                int userId = Integer.parseInt(fields[1].trim());
-                java.util.Date utilDate = sdf.parse(fields[2].trim());
-                Date date = new Date(utilDate.getTime());
-                String ticker = fields[3].trim();
-                double price = Double.parseDouble(fields[4].replace(",", ".").trim());
-                String currency = fields[5].trim();
-                OrderType orderType = OrderType.valueOf(fields[6].trim().toUpperCase());
-                int quantity = Integer.parseInt(fields[7].trim());
-
-                Transaction trx = new Transaction(id, userId, date, ticker, price, currency, orderType, quantity);
-                transactions.add(trx);
-            }
-        } catch (Exception e) {
-            System.out.println("Fejl ved læsning af CSV-fil: " + filePath);
-            e.printStackTrace();
-        }
-    }
-
     public List<Transaction> getAllTransactions() {
         List<Transaction> transactions = new ArrayList<>();
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
@@ -198,6 +166,35 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
 
         return transactions;
+    }
+    private void loadTransactions(String filePath) {
+        ArrayList<Object> transactions = new ArrayList<>(); // Clear existing transactions
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine(); // skip header
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                String[] fields = line.split(";");
+                if (fields.length < 8) continue;
+
+                int id = Integer.parseInt(fields[0].trim());
+                int userId = Integer.parseInt(fields[1].trim());
+                java.util.Date utilDate = sdf.parse(fields[2].trim());
+                Date date = new Date(utilDate.getTime());
+                String ticker = fields[3].trim();
+                double price = Double.parseDouble(fields[4].replace(",", ".").trim());
+                String currency = fields[5].trim();
+                OrderType orderType = OrderType.valueOf(fields[6].trim().toUpperCase());
+                int quantity = Integer.parseInt(fields[7].trim());
+
+                Transaction trx = new Transaction(id, userId, date, ticker, price, currency, orderType, quantity);
+                transactions.add(trx);
+            }
+        } catch (Exception e) {
+            System.out.println("Fejl ved læsning af CSV-fil: " + filePath);
+            e.printStackTrace();
+        }
     }
 }
 

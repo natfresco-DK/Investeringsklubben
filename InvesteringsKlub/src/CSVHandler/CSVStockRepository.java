@@ -11,7 +11,9 @@ import java.util.*;
 public class CSVStockRepository implements StockRepository {
     protected List<Stock> stocks = new ArrayList<>();
 
-    public CSVStockRepository(){}
+    public CSVStockRepository(){
+        loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
+    }
 
     public CSVStockRepository(List<Stock> stocks){
         this.stocks = stocks;
@@ -29,17 +31,6 @@ public class CSVStockRepository implements StockRepository {
         return new ArrayList<>(stocks);
     }
 
-    /*
-    public Stock getStockByTicker(String ticker){
-        Stock stock = new Stock();
-        for (Stock s : stocks){
-            if(ticker == s.getTicker())
-                stock = s;
-        }
-        return stock;
-    }
-
-     */
     public Stock getStockByTicker(String ticker) {
         if (ticker == null) return null;
         for (Stock s : stocks) {
@@ -50,7 +41,7 @@ public class CSVStockRepository implements StockRepository {
         return null; // ikke fundet
     }
 
-    public void loadFromCSV(String filePath) {
+    private void loadFromCSV(String filePath) {
         clear();
         try (BufferedReader reader = Files.newBufferedReader(
                 Paths.get(filePath), StandardCharsets.UTF_8)) {
