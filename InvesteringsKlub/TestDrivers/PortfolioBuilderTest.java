@@ -52,11 +52,11 @@ class PortfolioBuilderTest {
     @Test
     void testBuildPortfolioFromTransactions() {
         Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
-
+        user.printTransactionHistory(transactionRepo,1);
         double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0);
-        assertEquals(expectedCash, portfolio.getCashBalance(), 0.01);
+        assertEquals(expectedCash, portfolio.getCashBalance());
 
-        Holding aapl = portfolio.getHoldings().get("AAPL");
+        Holding aapl = portfolio.getHoldings().get("aapl");
         assertNotNull(aapl);
         assertEquals(5, aapl.getQuantity());
         assertEquals(150.0, aapl.getPurchasePriceDKK(), 0.01);
@@ -65,7 +65,7 @@ class PortfolioBuilderTest {
         double expectedTotalValue = expectedCash + (5 * 150.0);
         assertEquals(expectedTotalValue, portfolio.getTotalValueDKK(), 0.01);
 
-        assertEquals(2, transactionRepo.getTransactions().size());
+        assertEquals(2, transactionRepo.getAllTransactions().size());
     }
 
     @Test
@@ -86,7 +86,7 @@ class PortfolioBuilderTest {
 
         Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
 
-        Holding aapl = portfolio.getHoldings().get("AAPL");
+        Holding aapl = portfolio.getHoldings().get("aapl");
         assertNotNull(aapl);
         assertEquals(20, aapl.getQuantity());
         double expectedAvgPrice = ((10 * 150.0) + (10 * 200.0)) / 20;
@@ -101,7 +101,7 @@ class PortfolioBuilderTest {
 
         Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
 
-        Holding aapl = portfolio.getHoldings().get("AAPL");
+        Holding aapl = portfolio.getHoldings().get("aapl");
         assertNotNull(aapl);
         assertEquals(5, aapl.getQuantity());
         assertTrue(portfolio.getCashBalance() <= user.getInitialCashDKK());
@@ -116,8 +116,8 @@ class PortfolioBuilderTest {
         Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
 
         assertEquals(2, portfolio.getHoldings().size());
-        assertTrue(portfolio.getHoldings().containsKey("AAPL"));
-        assertTrue(portfolio.getHoldings().containsKey("GOOG"));
+        assertTrue(portfolio.getHoldings().containsKey("aapl"));
+        assertTrue(portfolio.getHoldings().containsKey("goog"));
     }
 
     @Test

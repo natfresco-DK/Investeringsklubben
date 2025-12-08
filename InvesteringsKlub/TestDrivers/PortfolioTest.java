@@ -1,18 +1,16 @@
-import Builder.PortfolioBuilder;
+
 import CSVHandler.CSVStockRepository;
 import CSVHandler.StockRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Date;
 import java.util.List;
-import Domain.Stock;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PortfolioTest {
-
     private InMemoryStockRepository stockRepo;
     private InMemoryTransactionRepository transactionRepo;
     private User user;
@@ -39,68 +37,73 @@ class PortfolioTest {
     }
 
     @Test
-    void testBuyStockUpdatesPortfolio() {
+    void testBuyStockUpdatesPortfolioandTotalIncludesCash() {
         boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
         assertTrue(result);
 
-        // Holdings
-        Holding holding = portfolio.getHoldings().get("AAPL");
-        double expectedValue = holding.getQuantity() * holding.getCurrentPriceDKK();
+        Holding holding = portfolio.get("AAPL");
         assertNotNull(holding);
+
+
         assertEquals(10, holding.getQuantity());
-        assertEquals(150.0, holding.getPurchasePriceDKK());
+        assertEquals(150.0, holding.getPurchasePriceDKK(), 0.0001);
 
-        // Cash balance
-        assertEquals(10000.0 - 10 * 150.0, portfolio.getCashBalance());
+        // Cash decreased by the purchase amount
+        assertEquals(10000.0 - 10 * 150.0, portfolio.getCashBalance(), 0.0001);
 
-        // Total value
+        // Total value includes cash (with unchanged market price the total stays 10,000)
         portfolio.updateTotalValue(stockRepo);
-        assertEquals(10 * 150.0, portfolio.getTotalValueDKK());
+        assertEquals(10000.0, portfolio.getTotalValueDKK(), 0.0001);
     }
 
     @Test
-    void testSellStockUpdatesPortfolio() {
+    void testSellStockUpdatesPortfolio_totalIncludesCash() {
         portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
         boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo);
         assertTrue(result);
 
-        Holding holding = portfolio.getHoldings().get("AAPL");
+        Holding holding = portfolio.get("AAPL");
         assertNotNull(holding);
         assertEquals(5, holding.getQuantity());
 
-        assertEquals(10000.0 - 1500.0 + 750.0, portfolio.getCashBalance());
+        // Cash after buy (10000 - 1500) then sell (+750) = 9250
+        assertEquals(10000.0 - 1500.0 + 750.0, portfolio.getCashBalance(), 0.0001);
 
+        // Total value = holdings (5 * 150) + cash (9250) = 10,000 (unchanged price)
         portfolio.updateTotalValue(stockRepo);
-        double expectedTotalValue = holding.getQuantity() * holding.getCurrentPriceDKK();
-        assertEquals(expectedTotalValue, portfolio.getTotalValueDKK());
+        assertEquals(10000.0, portfolio.getTotalValueDKK(), 0.0001);
     }
 
     @Test
     void testBuyStockFailsWithInsufficientFunds() {
-        boolean result = portfolio.buyStock("GOOG", 10, stockRepo, transactionRepo); //2800*10 > 10000
+        boolean result = portfolio.buyStock("GOOG", 10, stockRepo, transactionRepo); // 2800 * 10 > 10000
         assertFalse(result);
+        assertNull(portfolio.get("GOOG"));
+        assertEquals(10000.0, portfolio.getCashBalance(), 0.0001);
 
-        assertNull(portfolio.getHoldings().get("GOOG"));
-        assertEquals(10000.0, portfolio.getCashBalance());
+        portfolio.updateTotalValue(stockRepo);
+        assertEquals(10000.0, portfolio.getTotalValueDKK(), 0.0001);
     }
 
     @Test
     void testSellStockFailsWithTooManyShares() {
         portfolio.buyStock("AAPL", 3, stockRepo, transactionRepo);
-
         boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo);
         assertFalse(result);
 
-        assertEquals(3, portfolio.getHoldings().get("AAPL").getQuantity());
-        assertEquals(10000.0 - 450.0, portfolio.getCashBalance());
+        assertEquals(3, portfolio.get("AAPL").getQuantity());
+        assertEquals(10000.0 - 450.0, portfolio.getCashBalance(), 0.0001);
+
+        portfolio.updateTotalValue(stockRepo);
+        assertEquals((3 * 150.0) + (10000.0 - 450.0), portfolio.getTotalValueDKK(), 0.0001);
     }
 
     @Test
     void testSeeStockMarketLoadsFromCSV() {
         StockRepository repo = new CSVStockRepository();
-        repo.loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
         List<Stock> stocks = repo.getAllStocks();
         assertFalse(stocks.isEmpty(), "Listen over aktier må ikke være tom");
+
         Stock pandora = repo.getStockByTicker("Pandora");
         assertNotNull(pandora, "PANDORA burde være i listen");
         assertEquals("Pandora", pandora.getName());
@@ -108,45 +111,34 @@ class PortfolioTest {
         assertEquals("DKK", pandora.getCurrency());
     }
 
-
     @Test
     void testPortfolioReturnCalculations() {
-        // Køb 10 AAPL til 150 (fra @BeforeEach-setup)
+        // Buy 10 AAPL at 150
         boolean buyResult = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
         assertTrue(buyResult);
 
-        // Tjek at vi har korrekt holding
-        Holding holding = portfolio.getHoldings().get("AAPL");
+        Holding holding = portfolio.get("AAPL");
         assertNotNull(holding);
         assertEquals(10, holding.getQuantity());
         assertEquals(150.0, holding.getPurchasePriceDKK(), 0.001);
 
-        // Simulér kursstigning: AAPL går fra 150 -> 200
+        // Simulate price increase: 150 -> 200
         Stock aapl = stockRepo.getStockByTicker("AAPL");
-        aapl.setPrice(200.0); // bruger setPrice fra TradableItem
+        aapl.setPrice(200.0);
 
-        // ACT – brug de nye beregningsmetoder
-        double investedDKK   = portfolio.calculateTotalInvestedDKK();
-        double currentDKK    = portfolio.calculatePortfolioValueIncludingCashDKK(stockRepo);
-        double realReturnDKK = portfolio.calculateRealReturnDKK(stockRepo);
-        double percentReturn = portfolio.calculateReturnPercentage(stockRepo);
-
-        // ASSERT
-        // Investering: 10 * 150 = 1500
+        // Invested is holdings-only at cost
+        double investedDKK = portfolio.calculateTotalInvestedDKK();
         assertEquals(1500.0, investedDKK, 0.001);
 
-        // Nuværdi: 10 * 200 = 2000
-        assertEquals(2000.0, currentDKK, 0.001);
+        // "Including cash" should truly include cash: 10 * 200 + (10000 - 1500) = 10500
+        double currentDKK = portfolio.calculatePortfolioValueIncludingCashDKK(stockRepo);
+        assertEquals(2000.0 + (10000.0 - 1500.0), currentDKK, 0.001);
 
-        // Reelt afkast: 2000 - 1500 = 500
+        // Real return and percentage are based on holdings value vs invested
+        double realReturnDKK = portfolio.calculateRealReturnDKK(stockRepo);
+        double percentReturn = portfolio.calculateReturnPercentage(stockRepo);
         assertEquals(500.0, realReturnDKK, 0.001);
-
-        // Procentafkast: (500 / 1500) * 100 = 33,33...%
         double expectedPercent = (500.0 / 1500.0) * 100.0;
         assertEquals(expectedPercent, percentReturn, 0.001);
     }
- // Skal gemmes i holdings.csv.
-
-
-
 }
