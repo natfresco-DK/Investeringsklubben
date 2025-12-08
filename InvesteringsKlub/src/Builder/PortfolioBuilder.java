@@ -26,24 +26,24 @@ public class PortfolioBuilder {
     public static void printPortfolio(User user, StockRepository stockRepo) {
         Portfolio portfolio = user.getPortfolio();
 
-        System.out.println("\n===== PORTFØLJE FOR " + user.getFullName() + " =====");
+        System.out.println("\n===== PORTFOLIO FOR " + user.getFullName() + " =====");
 
-        System.out.println("Kontantbeholdning: " + portfolio.getCashBalance() + " DKK");
-        System.out.println("\nAktiebeholdninger:");
+        System.out.println("CashBalance: " + portfolio.getCashBalance() + " DKK");
+        System.out.println("\nStock holdings:");
 
         for (Holding h : portfolio.getHoldings().values()) {
             System.out.println(
                     "- " + h.getTicker() +
-                            ": " + h.getQuantity() + " stk. | " +
-                            "Købspris: " + h.getPurchasePriceDKK() + " DKK | " +
-                            "Nuværende pris: " + h.getCurrentPriceDKK() + " DKK"
+                            ": " + h.getQuantity() + " qty. | " +
+                            "Purchase price: " + h.getPurchasePriceDKK() + " DKK | " +
+                            "Current price: " + h.getCurrentPriceDKK() + " DKK"
             );
         }
 
-        System.out.println("\nSamlet investeret: " + portfolio.calculateTotalInvestedDKK());
-        System.out.println("Samlet nuværende værdi: " + portfolio.calculateCurrentHoldingsValueDKK(stockRepo));
-        System.out.println("Reelt afkast: " + portfolio.calculateRealReturnDKK(stockRepo));
-        System.out.println("Afkast i procent: " + portfolio.calculateReturnPercentage(stockRepo) + "%");
+        System.out.println("\nTotal invested: " + portfolio.calculateTotalInvestedDKK());
+        System.out.println("Total present value: " + portfolio.calculateCurrentHoldingsValueDKK(stockRepo));
+        System.out.println("Real return: " + portfolio.calculateRealReturnDKK(stockRepo));
+        System.out.println("Return in percent: " + portfolio.calculateReturnPercentage(stockRepo) + "%");
     }
 
 
