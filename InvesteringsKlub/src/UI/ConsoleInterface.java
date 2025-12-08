@@ -98,8 +98,8 @@ public class ConsoleInterface {
 
             switch (choice) {
                 case "1": showStockMarket(); break;
-                case "2": CSVUserRepository repo = new CSVUserRepository();
-
+                case "2":
+                    CSVUserRepository repo = new CSVUserRepository();
                     Leaderboard.printAllPortfolios(repo);break;
                 case "3": viewTransactionHistoryForUser(); break;
                 case "4": viewMostBoughtStock(); break;
