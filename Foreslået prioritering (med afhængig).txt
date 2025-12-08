@@ -1,0 +1,57 @@
+Foreslået prioritering (med afhængigheder)
+
+
+Robusthed & Fejl-håndtering - Simon
+
+Input-validering (else + fejlbeskeder), try-catch rammer, transaction bug fix.
+Afhængigheder: Ingen kan starte med det samme.
+
+
+
+Adgangsmodel & UI-ramme - Munked first priority
+
+Differentieret UI for leder vs. bruger (ID), “tilgå som klubleder”.
+Afhængigheder: ingen kan starte med det samme.
+
+
+
+Klubleder-funktioner (MVP) - Munked/Filip
+
+Se alle medlemmernes porteføljer, klubbens samlede porteføljeværdi, mest handlede aktier (globalt).
+Afhængigheder: UI-ramme, sektor/metrics delvist.
+
+
+
+Portfolio & Metrics - Oliver
+
+Procentstigninger, samlet afkast, portfolio skal printe holding købs pris.
+Afhængigheder: Ikke noget kan starte med det samme.
+
+
+
+Sektor-inddeling - Jonathan
+
+Kræves for “mest handlede pr. sektor” og leder-oversigter.
+Afhængigheder: Skal implementeres og er afhængig Klubleder-funktioner.
+
+
+Internationalisering - Oliver
+
+Oversæt alle beskeder og metoder til engelsk.
+Afhængigheder: UI og beskeder samlede; kan løbe parallelt.
+
+
+Tests - Simon (hjælper alle med at lave test til deres metoder)
+
+Tilføjes Unit tests for alle users portfølje oversigt og UI Consolen. .
+Afhængigheder: Klubleder-funktioner og UI consolen er færdig.
+
+
+
+Merge & Koordination (løbende) - Alle
+
+
+Tilføj manglende metoder, code review, afklaring (leder vs. bruger interface).
+Afhængigheder: Kontinuerligt.
+
+

@@ -1,0 +1,48 @@
+=== Login Screen ===
+1. user login
+ - calls "user Menu"
+2. Leader Login
+ - calls "leader Menu"
+
+
+"User menu"
+Prints asking for user ID
+User inputs user ID
+
+hello user name
+
+=== User Menu ===
+1. View Stock Market
+ - calls stock market method
+2. View Portfolio
+ - calls view user portfolio method
+3. View Transaction History
+ - calls view user transaction history
+4. Buy Stock
+ - calls buy stock method
+5. Sell Stock
+ - calls sell stock method
+0. Exit
+ - closes application
+Choose an option: 
+
+
+"Leader menu"
+=== Leader Menu ===
+1. View Stock Market
+ - calls stock market method
+2. View List of Members Portfolios
+ - calls view List of users portfolio method
+3. View Transaction History
+ - calls view user transaction history
+4. View most Bought stock
+ - Calls view most bought stock
+5. View most Sold stocks
+ - Calls view most sold stock
+6. View Stocks sorted by most bought
+ - calls view stocks by most bought method
+7. View most sold stocks by sectors
+ - calls view all stocks by sectors method
+0. Exit
+ - closes application
+Choose an option:

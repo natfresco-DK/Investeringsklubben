@@ -1,5 +1,6 @@
 import Builder.PortfolioBuilder;
 import CSVHandler.CSVStockRepository;
+import CSVHandler.StockRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +97,7 @@ class PortfolioTest {
 
     @Test
     void testSeeStockMarketLoadsFromCSV() {
-        CSVStockRepository repo = new CSVStockRepository();
+        StockRepository repo = new CSVStockRepository();
         repo.loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
         List<Stock> stocks = repo.getAllStocks();
         assertFalse(stocks.isEmpty(), "Listen over aktier må ikke være tom");
@@ -126,7 +127,7 @@ class PortfolioTest {
 
         // ACT – brug de nye beregningsmetoder
         double investedDKK   = portfolio.calculateTotalInvestedDKK();
-        double currentDKK    = portfolio.calculateCurrentHoldingsValueDKK(stockRepo);
+        double currentDKK    = portfolio.calculatePortfolioValueIncludingCashDKK(stockRepo);
         double realReturnDKK = portfolio.calculateRealReturnDKK(stockRepo);
         double percentReturn = portfolio.calculateReturnPercentage(stockRepo);
 

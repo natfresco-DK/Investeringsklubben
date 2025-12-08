@@ -26,7 +26,6 @@ public class ConsoleInterface {
         int userID = Integer.parseInt(scanner.nextLine());
         setCurrentUser(userID);
         System.out.println("Hello " + currentUser.getFullName());
-
         while (!exit) {
             showMainMenu();
             String choice = scanner.nextLine().trim();
@@ -41,9 +40,11 @@ public class ConsoleInterface {
                     showTransactions();
                     break;
                 case "4":
+                    showStockMarket();
                     buyStock();
                     break;
                 case "5":
+                    showStockMarket();
                     sellStock();
                     break;
                 case "0":
