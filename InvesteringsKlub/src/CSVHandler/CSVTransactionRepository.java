@@ -15,8 +15,24 @@ public class CSVTransactionRepository implements TransactionRepository {
     }
     public void writeTransaction(Transaction trx) {
         String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
-        try (FileWriter writer = new FileWriter(filePath, true)) {
-            writer.append(trx.toString() + '\n');
+        File file = new File(filePath);
+        boolean fileExists = file.exists();
+
+        try (FileWriter writer = new FileWriter(file, true)) {
+            // skriv header hvis filen ikke findes eller er tom
+            if (!fileExists || file.length() == 0) {
+                writer.append("ID;UserID;Date;Ticker;Price;Currency;Type;Quantity\n");
+            }
+
+            // Gem i korrekt CSV-format, ikke trx.toString()
+            writer.append(trx.getID() + ";" +
+                    trx.getUserID() + ";" +
+                    new SimpleDateFormat("dd-MM-yyyy").format(trx.getDate()) + ";" +
+                    trx.getTicker() + ";" +
+                    trx.getPrice() + ";" +
+                    trx.getCurrency() + ";" +
+                    trx.getOrderType().name() + ";" +
+                    trx.getQuantity() + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,8 +53,8 @@ public class CSVTransactionRepository implements TransactionRepository {
             //If file not found or unreadable, we start from 1
             return nextId;
         }
+
         if (lastLine != null) {
-            //Optional: detect & skip header row
             if (lastLine.toLowerCase().startsWith("id;")) {
                 return nextId;
             }
@@ -60,20 +76,23 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
-
             br.readLine(); // skip header
 
             while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty())
+                    continue;
+
                 String[] fields = line.split(";");
+                if (fields.length < 8)
+                    continue;
 
                 try {
                     int csvUserId = Integer.parseInt(fields[1]);
-
                     if (csvUserId == userId) {
                         int id = Integer.parseInt(fields[0]);
-
                         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-                        java.util.Date utilDate = sdf.parse(fields[2]); // kan kaste ParseException
+                        java.util.Date utilDate = sdf.parse(fields[2]);
                         Date date = new Date(utilDate.getTime());
 
                         String ticker = fields[3];
@@ -113,7 +132,8 @@ public class CSVTransactionRepository implements TransactionRepository {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty() || line.toLowerCase().startsWith("id;")) continue; // Spring header eller tomme linjer
+                if (line.isEmpty() || line.toLowerCase().startsWith("id;"))
+                    continue; // Spring header eller tomme linjer
 
                 String[] parts = line.split(";");
                 if (parts.length == 8) {
@@ -149,8 +169,8 @@ public class CSVTransactionRepository implements TransactionRepository {
 
                         String ticker = parts[3].trim();
                         double price = Double.parseDouble(parts[4].trim().replace(",", "."));
-                        String currency = parts[5].trim();
                         Domain.OrderType orderType = Domain.OrderType.valueOf(parts[6].trim().toUpperCase());
+                        String currency = parts[5].trim();
                         int quantity = Integer.parseInt(parts[7].trim());
 
                         Transaction trx = new Transaction(id, userId, date, ticker, price, currency, orderType, quantity);
@@ -158,7 +178,6 @@ public class CSVTransactionRepository implements TransactionRepository {
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace(); // Fanger NumberFormatException ogsÃ¥
                     }
-
                 }
             }
         } catch (IOException e) {
@@ -197,4 +216,3 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
     }
 }
-
