@@ -1,16 +1,20 @@
 package Domain;
 
+import Builder.PortfolioBuilder;
 import CSVHandler.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Leaderboard {
 
     public static void printAllPortfolios(UserRepository userRepo) {
 
         // Load repositories
-        CSVStockRepository stockRepo = new CSVStockRepository();
+        StockRepository stockRepo = new CSVStockRepository();
         stockRepo.getAllStocks();
 
-        CSVTransactionRepository transactionRepo = new CSVTransactionRepository();
+        TransactionRepository transactionRepo = new CSVTransactionRepository();
         transactionRepo.getAllTransactions();
 
         // Assign portfolios to users
