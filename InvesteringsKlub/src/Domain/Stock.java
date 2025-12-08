@@ -11,10 +11,10 @@ public class Stock extends TradableItem {
         this.sector = sector;
     }
 
+    //getters
     public String getName() {
         return name;
     }
-
     public String getSector() {
         return sector;
     }
