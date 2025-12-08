@@ -1,23 +1,22 @@
 package App;
 
-
 import CSVHandler.*;
 import UI.ConsoleInterface;
 
-
 public class Main {
     public static void main(String[] args) {
+        System.out.println("Starter programmet...");
 
-        
+        //Load Stock repo
+        StockRepository stockRepo = new CSVStockRepository();
 
-
-        CSVStockRepository stockRepo = new CSVStockRepository();
-        stockRepo.loadFromCSV("InvesteringsKlub/CSVRepository/stockMarket.csv");
-
+        //Load Transaction repo
         CSVTransactionRepository transactionRepo = new CSVTransactionRepository();
-        transactionRepo.loadFromCSV("InvesteringsKlub/CSVRepository/transactions.csv");
 
-        CSVUserRepository userRepo = new CSVUserRepository("InvesteringsKlub/CSVRepository/users.csv");
+        //Load User repo
+        CSVUserRepository userRepo = new CSVUserRepository();
+
+        //Regenerate Users Portfolio from transactions
         userRepo.addUsersPortfolio(stockRepo,transactionRepo);
         
         // Start console interface

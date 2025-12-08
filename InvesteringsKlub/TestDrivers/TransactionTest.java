@@ -78,14 +78,14 @@ class TransactionTest {
         portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
 
         // Kald testbar metode direkte med userId
-        boolean result = user.readTransactionHistory(transactionRepo, user.getUserId());
+        boolean result = user.printTransactionHistory(transactionRepo, user.getUserId());
         assertTrue(result);
     }
 
     @Test
     void testSeeUsersTransactionHistoryFalse() {
         // Brug et userId uden transaktioner
-        boolean result = user.readTransactionHistory(transactionRepo, 999);
+        boolean result = user.printTransactionHistory(transactionRepo, 999);
         assertFalse(result);
     }
 }

@@ -12,7 +12,7 @@ public class Transaction{
     protected String currency;
     protected OrderType orderType;
     protected int quantity;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    protected final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     public Transaction(){}
 
@@ -29,6 +29,7 @@ public class Transaction{
 
     }
 
+    //Getters
     public int getID() {
         return ID;
     }

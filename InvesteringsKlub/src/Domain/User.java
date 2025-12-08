@@ -41,60 +41,42 @@ public class User {
         }
     }
 
+    //Getters
     public int getUserId() {
         return userId;
     }
-
     public String getFullName() {
         return fullName;
     }
-
     public String getEmail() {
         return email;
     }
-
     public Date getBirthDate() {
         return birthDate;
     }
-
     public int getInitialCashDKK() {
         return initialCashDKK;
     }
-
     public Date getCreatedAt() {
         return createdAt;
     }
-
     public Date getLastUpdated() {
         return lastUpdated;
     }
-
     public Portfolio getPortfolio() {
         return portfolio;
     }
 
-    public void addPortfolio(Portfolio portfolio) {
-        this.portfolio = portfolio;
+    //Setters
+    public void setPortfolio(Portfolio p) {
+        this.portfolio = p;
     }
-
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-
-    public void sellStock(String ticker, int qty){
-
-    }
-    public boolean readTransactionHistory(TransactionRepository transactionRepo) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Type userID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
-
-        return readTransactionHistory(transactionRepo, userId);
-    }
-
-    // Ny testbar metode, som kan kaldes direkte med userId
-    public boolean readTransactionHistory(TransactionRepository transactionRepo, int userId) {
+    // Print users transaction history
+    public boolean printTransactionHistory(TransactionRepository transactionRepo, int userId) {
         List<Transaction> userTransactions = transactionRepo.getTransactionsByUserId(userId);
 
         if (userTransactions.isEmpty()) {
@@ -121,9 +103,5 @@ public class User {
         }
 
         return true;
-    }
-
-    public void setPortfolio(Portfolio p) {
-        this.portfolio = p;
     }
 }
