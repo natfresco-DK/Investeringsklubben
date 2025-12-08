@@ -5,7 +5,7 @@ import UI.ConsoleInterface;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Starter programmet...");
+        System.out.println("Starting program...");
 
         //Load Stock repo
         StockRepository stockRepo = new CSVStockRepository();

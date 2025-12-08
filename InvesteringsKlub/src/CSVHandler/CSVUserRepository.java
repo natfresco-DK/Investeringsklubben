@@ -68,7 +68,7 @@ public class CSVUserRepository implements UserRepository {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Fejl ved læsning af CSV-fil: " + path);
+            System.err.println("Error reading CSV file: " + path);
             e.printStackTrace();
         }
     }

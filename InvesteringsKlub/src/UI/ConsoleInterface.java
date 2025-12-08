@@ -98,13 +98,9 @@ public class ConsoleInterface {
 
             switch (choice) {
                 case "1": showStockMarket(); break;
-                case "2": CSVUserRepository repo = new CSVUserRepository();
-
-                    Leaderboard.printAllPortfolios(
-                            repo,
-                            "InvesteringsKlub/CSVRepository/stockMarket.csv",
-                            "InvesteringsKlub/CSVRepository/transactions.csv"
-                    );break;
+                case "2":
+                    CSVUserRepository repo = new CSVUserRepository();
+                    Leaderboard.printAllPortfolios(repo);break;
                 case "3": viewTransactionHistoryForUser(); break;
                 case "4": viewMostBoughtStock(); break;
                 case "5": viewMostSoldStock(); break;
@@ -142,10 +138,21 @@ public class ConsoleInterface {
     private void showPortfolio() {
         System.out.println("\n--- Portfolio ---");
         System.out.println("Cash: " + currentUser.getPortfolio().getCashBalance() + " DKK");
-        currentUser.getPortfolio().getHoldings().forEach((ticker, holding) ->
-                System.out.println(ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKK())
-        );
-        System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
+        currentUser.getPortfolio().getHoldings().forEach((ticker, holding) -> {
+                double percentChange = 0.0;
+
+                if (holding.getPurchasePriceDKK() > 0) {
+                    percentChange =
+                            ((holding.getCurrentPriceDKK() - holding.getPurchasePriceDKK())
+                                    / holding.getPurchasePriceDKK()) * 100.0;
+                }
+                System.out.println(ticker + " | Qty: " + holding.getQuantity() +
+                        " | Current Price DKK: " + holding.getCurrentPriceDKK() +
+                        " | Purchase Price DKK: " + holding.getPurchasePriceDKK() +
+                        " | Percent " + String.format("%.2f", percentChange) + "%"
+                );
+            });
+                System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
     }
 
     // ----------------------------

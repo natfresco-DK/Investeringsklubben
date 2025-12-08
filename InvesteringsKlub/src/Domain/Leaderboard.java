@@ -8,11 +8,7 @@ import java.util.List;
 
 public class Leaderboard {
 
-    public static void printAllPortfolios(
-            CSVUserRepository userRepo,
-            String stocksFile,
-            String transactionsFile
-    ) {
+    public static void printAllPortfolios(UserRepository userRepo) {
 
         // Load repositories
         StockRepository stockRepo = new CSVStockRepository();

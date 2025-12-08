@@ -4,22 +4,22 @@ import java.util.*;
 
 public class SectorFilter {
     
-    // Gruppér aktier efter sektor
-    public static Map<Sektor, List<Stock>> groupBySektor(List<Stock> stocks) {
-        Map<Sektor, List<Stock>> grouped = new HashMap<>();
+    // Gruppér aktier efter sector
+    public static Map<Sector, List<Stock>> groupBySector(List<Stock> stocks) {
+        Map<Sector, List<Stock>> grouped = new HashMap<>();
         
-        // Initialiser alle sektorer med tomme lister
-        for (Sektor sektor : Sektor.values()) {
-            grouped.put(sektor, new ArrayList<>());
+        // Initialiser alle sector med tomme lister
+        for (Sector sector : Sector.values()) {
+            grouped.put(sector, new ArrayList<>());
         }
         
         // Gruppér aktier
         for (Stock stock : stocks) {
             try {
-                Sektor sektor = Sektor.fromString(stock.getSector());
-                grouped.get(sektor).add(stock);
+                Sector sector = Sector.fromString(stock.getSector());
+                grouped.get(sector).add(stock);
             } catch (IllegalArgumentException e) {
-                // Ignorer aktier med ukendt sektor
+                // Ignorer aktier med ukendt sector
                 System.err.println("Warning: Unknown sector for " + stock.getTicker() + ": " + stock.getSector());
             }
         }
@@ -27,41 +27,41 @@ public class SectorFilter {
         return grouped;
     }
     
-    // Filtrer aktier baseret på én sektor
-    public static List<Stock> filterBySektor(List<Stock> stocks, Sektor sektor) {
+    // Filtrer aktier baseret på én sector
+    public static List<Stock> filterBySector(List<Stock> stocks, Sector sector) {
         List<Stock> filtered = new ArrayList<>();
         
         for (Stock stock : stocks) {
             try {
-                Sektor stockSektor = Sektor.fromString(stock.getSector());
-                if (stockSektor == sektor) {
+                Sector stockSector = Sector.fromString(stock.getSector());
+                if (stockSector == sector) {
                     filtered.add(stock);
                 }
             } catch (IllegalArgumentException e) {
-                // Ignorer aktier med ukendt sektor
+                // Ignorer aktier med ukendt sector
             }
         }
         
         return filtered;
     }
     
-    // Print oversigt over alle sektorer og deres aktier
+    // Print oversigt over alle sector og deres aktier
     public static void printSectorOverview(List<Stock> stocks) {
-        Map<Sektor, List<Stock>> grouped = groupBySektor(stocks);
+        Map<Sector, List<Stock>> grouped = groupBySector(stocks);
         
         System.out.println("\n═══════════════════════════════════════════════════════════");
-        System.out.println("           OVERSIGT OVER AKTIER PER SEKTOR");
+        System.out.println("           OVERVIEW OF SHARES BY SECTOR");
         System.out.println("═══════════════════════════════════════════════════════════\n");
         
-        for (Sektor sektor : Sektor.values()) {
-            List<Stock> sektorStocks = grouped.get(sektor);
-            System.out.println( sektor.getDisplayName() + " (" + sektorStocks.size() + " aktier):");
+        for (Sector sector : Sector.values()) {
+            List<Stock> sectorStocks = grouped.get(sector);
+            System.out.println( sector.getDisplayName() + " (" + sectorStocks.size() + " stocks):");
             System.out.println("───────────────────────────────────────────────────────────");
             
-            if (sektorStocks.isEmpty()) {
-                System.out.println("  Ingen aktier i denne sektor");
+            if (sectorStocks.isEmpty()) {
+                System.out.println("  No stocks in this sector");
             } else {
-                for (Stock stock : sektorStocks) {
+                for (Stock stock : sectorStocks) {
                     System.out.printf("  • %-10s - %-30s %8.2f %s%n", 
                         stock.getTicker(), 
                         stock.getName(), 

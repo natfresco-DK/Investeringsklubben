@@ -294,13 +294,13 @@ public class Portfolio {
          double total = 0.0;
          for (Holding h : holdings.values()) {
              double investedInHolding = h.getQuantity() * h.getPurchasePriceDKK();
-             System.out.println("[INVESTERET] " + h.getTicker() + ": "
-                     + h.getQuantity() + " stk * " + h.getPurchasePriceDKK()
+             System.out.println("[Invested] " + h.getTicker() + ": "
+                     + h.getQuantity() + " qty * " + h.getPurchasePriceDKK()
                      + " = " + investedInHolding + " DKK");
 
              total += investedInHolding;
          }
-         System.out.println("[INVESTERET TOTAL] " + total + " DKK\n");
+         System.out.println("[Total invested] " + total + " DKK\n");
          return total;
      }
 
@@ -326,20 +326,20 @@ public class Portfolio {
 
             double newPrice = h.getCurrentPriceDKK();
 
-            System.out.println("[OPDATERING] " + h.getTicker()
-                    + " gammel pris: " + oldPrice
-                    + " → ny pris: " + newPrice);
+            System.out.println("[Update] " + h.getTicker()
+                    + " old price: " + oldPrice
+                    + " → new price: " + newPrice);
 
             double holdingValue = newPrice * h.getQuantity();
 
-            System.out.println("[NUVÆRENDE VÆRDI] " + h.getTicker() + ": "
-                    + h.getQuantity() + " stk * " + newPrice
+            System.out.println("[Current value] " + h.getTicker() + ": "
+                    + h.getQuantity() + " qty * " + newPrice
                     + " = " + holdingValue + " DKK");
 
             value += holdingValue;
         }
 
-        System.out.println("[HOLDINGS VÆRDI TOTAL] " + value + " DKK\n");
+        System.out.println("[TOTAL HOLDING VALUE] " + value + " DKK\n");
         return value;
     }
 
@@ -349,8 +349,8 @@ public class Portfolio {
          double holdingsValue = calculateCurrentHoldingsValueDKK(stockRepo);
          double total = holdingsValue + cashBalance;
 
-         System.out.println("[PORTFØLJE TOTAL] Holdings: " + holdingsValue
-                 + " + Kontanter: " + cashBalance
+         System.out.println("[TOTAL PORTFOLIO] Holdings: " + holdingsValue
+                 + " + Cash: " + cashBalance
                  + " = " + total + " DKK\n");
 
          return total;
@@ -363,8 +363,8 @@ public class Portfolio {
 
          double realReturn = current - invested;
 
-         System.out.println("[AFKAST] Nuværende: " + current
-                 + " - Investering: " + invested
+         System.out.println("[Returns] Current: " + current
+                 + " - Investment: " + invested
                  + " = " + realReturn + " DKK\n");
 
          return realReturn;
@@ -374,14 +374,14 @@ public class Portfolio {
     public double calculateReturnPercentage(StockRepository stockRepo) {
         double invested = calculateTotalInvestedDKK();
         if (invested == 0) {
-            System.out.println("[PROCENT] Ingen investering → 0%");
+            System.out.println("[Percent] No investment -> 0%");
             return 0.0;
         }
 
         double realReturn = calculateRealReturnDKK(stockRepo);
         double percentage = (realReturn / invested) * 100.0;
 
-        System.out.println("[PROCENT STIGNING] (" + realReturn + " / "
+        System.out.println("[PERCENTAGE INCREASE] (" + realReturn + " / "
                 + invested + ") * 100 = " + percentage + "%\n");
 
         return percentage;
@@ -389,27 +389,27 @@ public class Portfolio {
 
     public String toString(StockRepository stockRepo) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Portefølje for ").append(owner.getFullName()).append("\n");
-        sb.append("Kontantbeholdning: ").append(cashBalance).append(" DKK\n");
+        sb.append("Portfolio for ").append(owner.getFullName()).append("\n");
+        sb.append("CashBalance: ").append(cashBalance).append(" DKK\n");
         sb.append("Holdings:\n");
 
         if (holdings.isEmpty()) {
-            sb.append("Ingen aktier i porteføljen.\n");
+            sb.append("No stocks in portfolio.\n");
         } else {
             for (Holding h : holdings.values()) {
                 sb.append("- ")
                         .append(h.getTicker())
                         .append(": ")
                         .append(h.getQuantity())
-                        .append(" stk | Købspris: ")
+                        .append(" qty | Purcahse price: ")
                         .append(h.getPurchasePriceDKK())
-                        .append(" DKK | Nuværende pris: ")
+                        .append(" DKK | Current price: ")
                         .append(h.getCurrentPriceDKK())
                         .append(" DKK\n");
             }
         }
 
-        sb.append("Samlet værdi af holdings: ")
+        sb.append("Total value of holdings: ")
                 .append(calculateCurrentHoldingsValueDKK(stockRepo))
                 .append(" DKK\n");
 

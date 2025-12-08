@@ -1,5 +1,4 @@
 import Domain.*;
-import CSVHandler.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,10 +6,10 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SektorAndTradingStatisticsTest {
+class SectorAndTradingStatisticsTest {
 
-    private Sektor healthCare;
-    private Sektor technology;
+    private Sector healthCare;
+    private Sector technology;
     private TradingStatistics appleStats;
     private TradingStatistics googleStats;
     private List<Stock> testStocks;
@@ -19,8 +18,8 @@ class SektorAndTradingStatisticsTest {
 
     @BeforeEach
     void setup() {
-        healthCare = Sektor.HEALTH_CARE;
-        technology = Sektor.TECHNOLOGY;
+        healthCare = Sector.HEALTH_CARE;
+        technology = Sector.TECHNOLOGY;
         
         appleStats = new TradingStatistics("AAPL", "Apple Inc.", technology);
         googleStats = new TradingStatistics("GOOG", "Google Inc.", technology);
@@ -49,45 +48,45 @@ class SektorAndTradingStatisticsTest {
         testTransactions.add(new Transaction(6, 2, new Date(), "JNJ", 182.0, "DKK", OrderType.SELL, 4));
     }
 
-    // Sektor Tests
+    // Sector Tests
     @Test
-    void testSektorGetDisplayName() {
+    void testSectorGetDisplayName() {
         assertEquals("Health Care", healthCare.getDisplayName());
         assertEquals("Technology", technology.getDisplayName());
     }
 
     @Test
-    void testSektorFromString() {
-        Sektor result = Sektor.fromString("Health Care");
-        assertEquals(Sektor.HEALTH_CARE, result);
+    void testSectorFromString() {
+        Sector result = Sector.fromString("Health Care");
+        assertEquals(Sector.HEALTH_CARE, result);
         
-        result = Sektor.fromString("technology");
-        assertEquals(Sektor.TECHNOLOGY, result);
+        result = Sector.fromString("technology");
+        assertEquals(Sector.TECHNOLOGY, result);
     }
 
     @Test
-    void testSektorFromStringInvalidSector() {
+    void testSectorFromStringInvalidSector() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Sektor.fromString("Invalid Sector");
+            Sector.fromString("Invalid Sector");
         });
     }
 
     @Test
-    void testSektorAllValues() {
-        Sektor[] sectors = Sektor.values();
+    void testSectorAllValues() {
+        Sector[] sectors = Sector.values();
         assertEquals(7, sectors.length);
         
-        assertTrue(containsSektor(sectors, Sektor.HEALTH_CARE));
-        assertTrue(containsSektor(sectors, Sektor.INDUSTRIALS));
-        assertTrue(containsSektor(sectors, Sektor.CONSUMER_GOODS));
-        assertTrue(containsSektor(sectors, Sektor.FINANCIALS));
-        assertTrue(containsSektor(sectors, Sektor.ENERGY));
-        assertTrue(containsSektor(sectors, Sektor.UTILITIES));
-        assertTrue(containsSektor(sectors, Sektor.TECHNOLOGY));
+        assertTrue(containsSector(sectors, Sector.HEALTH_CARE));
+        assertTrue(containsSector(sectors, Sector.INDUSTRIALS));
+        assertTrue(containsSector(sectors, Sector.CONSUMER_GOODS));
+        assertTrue(containsSector(sectors, Sector.FINANCIALS));
+        assertTrue(containsSector(sectors, Sector.ENERGY));
+        assertTrue(containsSector(sectors, Sector.UTILITIES));
+        assertTrue(containsSector(sectors, Sector.TECHNOLOGY));
     }
 
-    private boolean containsSektor(Sektor[] sectors, Sektor target) {
-        for (Sektor s : sectors) {
+    private boolean containsSector(Sector[] sectors, Sector target) {
+        for (Sector s : sectors) {
             if (s == target) return true;
         }
         return false;
@@ -98,7 +97,7 @@ class SektorAndTradingStatisticsTest {
     void testTradingStatisticsCreation() {
         assertEquals("AAPL", appleStats.getTicker());
         assertEquals("Apple Inc.", appleStats.getStockName());
-        assertEquals(Sektor.TECHNOLOGY, appleStats.getSektor());
+        assertEquals(Sector.TECHNOLOGY, appleStats.getSector());
         assertEquals(0, appleStats.getTotalBuys());
         assertEquals(0, appleStats.getTotalSells());
         assertEquals(0, appleStats.getTotalTrades());
@@ -139,23 +138,23 @@ class SektorAndTradingStatisticsTest {
     }
 
     @Test
-    void testMultipleTradingStatisticsWithSameSektor() {
-        assertEquals(appleStats.getSektor(), googleStats.getSektor());
-        assertEquals("Technology", appleStats.getSektor().getDisplayName());
-        assertEquals("Technology", googleStats.getSektor().getDisplayName());
+    void testMultipleTradingStatisticsWithSameSector() {
+        assertEquals(appleStats.getSector(), googleStats.getSector());
+        assertEquals("Technology", appleStats.getSector().getDisplayName());
+        assertEquals("Technology", googleStats.getSector().getDisplayName());
     }
 
     @Test
-    void testTradingStatisticsWithDifferentSektors() {
+    void testTradingStatisticsWithDifferentSectors() {
         TradingStatistics healthStats = new TradingStatistics(
             "JNJ", 
-            "Johnson & Johnson", 
-            Sektor.HEALTH_CARE
+            "Johnson & Johnson",
+                Sector.HEALTH_CARE
         );
         
-        assertNotEquals(appleStats.getSektor(), healthStats.getSektor());
-        assertEquals("Technology", appleStats.getSektor().getDisplayName());
-        assertEquals("Health Care", healthStats.getSektor().getDisplayName());
+        assertNotEquals(appleStats.getSector(), healthStats.getSector());
+        assertEquals("Technology", appleStats.getSector().getDisplayName());
+        assertEquals("Health Care", healthStats.getSector().getDisplayName());
     }
 
     @Test
@@ -165,7 +164,7 @@ class SektorAndTradingStatisticsTest {
 
     @Test
     void testTradingStatisticsZeroValues() {
-        TradingStatistics newStats = new TradingStatistics("MSFT", "Microsoft", Sektor.TECHNOLOGY);
+        TradingStatistics newStats = new TradingStatistics("MSFT", "Microsoft", Sector.TECHNOLOGY);
         
         assertEquals(0, newStats.getTotalBuys());
         assertEquals(0, newStats.getTotalSells());
@@ -174,60 +173,60 @@ class SektorAndTradingStatisticsTest {
     }
 
     @Test
-    void testSektorCaseInsensitiveFromString() {
-        assertEquals(Sektor.HEALTH_CARE, Sektor.fromString("health care"));
-        assertEquals(Sektor.HEALTH_CARE, Sektor.fromString("HEALTH CARE"));
-        assertEquals(Sektor.HEALTH_CARE, Sektor.fromString("Health Care"));
+    void testSectorCaseInsensitiveFromString() {
+        assertEquals(Sector.HEALTH_CARE, Sector.fromString("health care"));
+        assertEquals(Sector.HEALTH_CARE, Sector.fromString("HEALTH CARE"));
+        assertEquals(Sector.HEALTH_CARE, Sector.fromString("Health Care"));
     }
 
     // SectorFilter Tests
     @Test
-    void testFilterBySektor() {
-        List<Stock> techStocks = SectorFilter.filterBySektor(testStocks, Sektor.TECHNOLOGY);
+    void testFilterBySector() {
+        List<Stock> techStocks = SectorFilter.filterBySector(testStocks, Sector.TECHNOLOGY);
         assertEquals(2, techStocks.size());
         assertTrue(containsStockWithTicker(techStocks, "AAPL"));
         assertTrue(containsStockWithTicker(techStocks, "GOOG"));
     }
 
     @Test
-    void testFilterBySektorHealthCare() {
-        List<Stock> healthStocks = SectorFilter.filterBySektor(testStocks, Sektor.HEALTH_CARE);
+    void testFilterBySectorHealthCare() {
+        List<Stock> healthStocks = SectorFilter.filterBySector(testStocks, Sector.HEALTH_CARE);
         assertEquals(2, healthStocks.size());
         assertTrue(containsStockWithTicker(healthStocks, "JNJ"));
         assertTrue(containsStockWithTicker(healthStocks, "PFE"));
     }
 
     @Test
-    void testFilterBySektorEnergy() {
-        List<Stock> energyStocks = SectorFilter.filterBySektor(testStocks, Sektor.ENERGY);
+    void testFilterBySectorEnergy() {
+        List<Stock> energyStocks = SectorFilter.filterBySector(testStocks, Sector.ENERGY);
         assertEquals(1, energyStocks.size());
         assertTrue(containsStockWithTicker(energyStocks, "XOM"));
     }
 
     @Test
-    void testFilterBySektorEmptyResult() {
-        List<Stock> industrialStocks = SectorFilter.filterBySektor(testStocks, Sektor.INDUSTRIALS);
+    void testFilterBySectorEmptyResult() {
+        List<Stock> industrialStocks = SectorFilter.filterBySector(testStocks, Sector.INDUSTRIALS);
         assertEquals(0, industrialStocks.size());
     }
 
     @Test
-    void testGroupBySektor() {
-        Map<Sektor, List<Stock>> grouped = SectorFilter.groupBySektor(testStocks);
+    void testGroupBySector() {
+        Map<Sector, List<Stock>> grouped = SectorFilter.groupBySector(testStocks);
         
-        assertEquals(2, grouped.get(Sektor.TECHNOLOGY).size());
-        assertEquals(2, grouped.get(Sektor.HEALTH_CARE).size());
-        assertEquals(1, grouped.get(Sektor.ENERGY).size());
-        assertEquals(0, grouped.get(Sektor.INDUSTRIALS).size());
+        assertEquals(2, grouped.get(Sector.TECHNOLOGY).size());
+        assertEquals(2, grouped.get(Sector.HEALTH_CARE).size());
+        assertEquals(1, grouped.get(Sector.ENERGY).size());
+        assertEquals(0, grouped.get(Sector.INDUSTRIALS).size());
     }
 
     @Test
-    void testGroupBySektorAllSektorsPresent() {
-        Map<Sektor, List<Stock>> grouped = SectorFilter.groupBySektor(testStocks);
+    void testGroupBySectorAllSectorsPresent() {
+        Map<Sector, List<Stock>> grouped = SectorFilter.groupBySector(testStocks);
         
         // Verify all sectors are in the map
-        for (Sektor sektor : Sektor.values()) {
-            assertTrue(grouped.containsKey(sektor));
-            assertNotNull(grouped.get(sektor));
+        for (Sector sector : Sector.values()) {
+            assertTrue(grouped.containsKey(sector));
+            assertNotNull(grouped.get(sector));
         }
     }
 
@@ -295,13 +294,13 @@ class SektorAndTradingStatisticsTest {
     }
 
     @Test
-    void testFilterStatsBySektor() {
+    void testFilterStatsBySector() {
         List<TradingStatistics> stats = TradingStatistics.calculateFromTransactions(
             testTransactions, stockRepo
         );
         
-        List<TradingStatistics> techStats = TradingStatistics.filterBySektor(
-            stats, Sektor.TECHNOLOGY
+        List<TradingStatistics> techStats = TradingStatistics.filterBySector(
+            stats, Sector.TECHNOLOGY
         );
         
         assertEquals(2, techStats.size());
@@ -310,13 +309,13 @@ class SektorAndTradingStatisticsTest {
     }
 
     @Test
-    void testFilterStatsBySektorHealthCare() {
+    void testFilterStatsBySectorHealthCare() {
         List<TradingStatistics> stats = TradingStatistics.calculateFromTransactions(
             testTransactions, stockRepo
         );
         
-        List<TradingStatistics> healthStats = TradingStatistics.filterBySektor(
-            stats, Sektor.HEALTH_CARE
+        List<TradingStatistics> healthStats = TradingStatistics.filterBySector(
+            stats, Sector.HEALTH_CARE
         );
         
         assertEquals(1, healthStats.size());
@@ -399,9 +398,9 @@ class SektorAndTradingStatisticsTest {
             testTransactions, stockRepo
         );
         
-        // 2. Filtrer efter Technology sektor
-        List<TradingStatistics> techStats = TradingStatistics.filterBySektor(
-            allStats, Sektor.TECHNOLOGY
+        // 2. Filtrer efter Technology sector
+        List<TradingStatistics> techStats = TradingStatistics.filterBySector(
+            allStats, Sector.TECHNOLOGY
         );
         
         // 3. Sorter efter mest solgte
@@ -418,7 +417,7 @@ class SektorAndTradingStatisticsTest {
 
     @Test
     void testCompleteWorkflowAllSectors() {
-        // Test hele workflow uden sektor-filtrering
+        // Test hele workflow uden sector-filtrering
         List<TradingStatistics> allStats = TradingStatistics.calculateFromTransactions(
             testTransactions, stockRepo
         );

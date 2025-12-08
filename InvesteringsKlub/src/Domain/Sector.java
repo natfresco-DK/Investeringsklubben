@@ -1,7 +1,7 @@
 package Domain;
 
 
-public enum Sektor {
+public enum Sector {
     HEALTH_CARE("Health Care"),
     INDUSTRIALS("Industrials"),
     CONSUMER_GOODS("Consumer Goods"),
@@ -12,7 +12,7 @@ public enum Sektor {
 
     private final String displayName;
 
-    Sektor(String displayName) {
+    Sector(String displayName) {
         this.displayName = displayName;
     }
 
@@ -21,10 +21,10 @@ public enum Sektor {
     }
 
     // Konverter fra CSV string til enum
-    public static Sektor fromString(String text) {
-        for (Sektor sektor : Sektor.values()) {
-            if (sektor.displayName.equalsIgnoreCase(text)) {
-                return sektor;
+    public static Sector fromString(String text) {
+        for (Sector sector : Sector.values()) {
+            if (sector.displayName.equalsIgnoreCase(text)) {
+                return sector;
             }
         }
         throw new IllegalArgumentException("Unknown sector: " + text);
