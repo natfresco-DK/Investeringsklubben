@@ -5,6 +5,7 @@ import Builder.PortfolioBuilder;
 import Domain.User;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,7 +14,18 @@ import java.util.*;
 
 public class CSVUserRepository implements UserRepository {
     private Map<Integer, User> users = new HashMap<>();
-    private final String filePath = "InvesteringsKlub/CSVRepository/users.csv";
+    
+    private static String getCSVPath(String filename) {
+        // Prøv først CSVRepository/ (VS Code working directory)
+        File file = new File("CSVRepository/" + filename);
+        if (file.exists()) {
+            return "CSVRepository/" + filename;
+        }
+        // Ellers brug InvesteringsKlub/CSVRepository/ (IntelliJ working directory)
+        return "InvesteringsKlub/CSVRepository/" + filename;
+    }
+    
+    private final String filePath = getCSVPath("users.csv");
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     public CSVUserRepository() {
