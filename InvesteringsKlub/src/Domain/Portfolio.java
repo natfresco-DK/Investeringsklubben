@@ -1,80 +1,253 @@
 package Domain;
 
 import CSVHandler.*;
-
-
 import java.util.*;
 
 public class Portfolio {
     protected double cashBalance;
     protected double totalValueDKK;
     protected User owner;
-    protected Map<String, Holding> holdings = new HashMap<>();
 
-    public Portfolio(){}
-    public Portfolio(User user,double cashBalance){
-        owner = user;
+    // Separate maps for stocks and bonds
+    protected Map<String, Holding> holdings = new HashMap<>();
+    protected Map<String, Holding> bondHoldings = new HashMap<>();
+
+    public Portfolio() {}
+
+    public Portfolio(User user, double cashBalance) {
+        this.owner = user;
         this.cashBalance = cashBalance;
-        totalValueDKK = cashBalance;
+        this.totalValueDKK = cashBalance;
     }
+
     // Getters
     public double getTotalValueDKK() {
         return totalValueDKK;
     }
+
     public double getCashBalance() {
         return cashBalance;
     }
+
     public User getOwner() {
         return owner;
     }
-    public Map<String,Holding> getHoldings() {
+
+    public Map<String, Holding> getHoldings() {
         return holdings;
     }
 
-    //Setters
+    public Map<String, Holding> getBondHoldings() {
+        return bondHoldings;
+    }
+
+    // Setters
     public void setCashBalance(double cashBalance) {
         this.cashBalance = cashBalance;
     }
 
-    //Holdings
-    public void addHolding(Holding holding, StockRepository stockRepo) {
-        String key = norm(holding.getTicker());
-        put(key,holding);
-        updateTotalValue(stockRepo);
-    }
-
-    public void removeHolding(String ticker, StockRepository stockRepo){
-        String key = norm(ticker);
-        remove(key);
-        updateTotalValue(stockRepo);
-    }
-    private static String norm(String key){
+    // ----------------------------
+    // Utility
+    // ----------------------------
+    private static String norm(String key) {
         return key == null ? null : key.toLowerCase(Locale.ROOT);
     }
-    public Holding put(String ticker, Holding holding){
-        return holdings.put(norm(ticker), holding);
-    }
-    public Holding get(String ticker){
-        return holdings.get(norm(ticker));
-    }
-    public Boolean containsKey(String ticker){
-        return holdings.containsKey(norm(ticker));
-    }
-    public Holding remove(String ticker){
-        return holdings.remove(norm(ticker));
+
+    // ----------------------------
+    // Stock Methods
+    // ----------------------------
+    public void addHolding(Holding holding, StockRepository stockRepo) {
+        String key = norm(holding.getTicker());
+        holdings.put(key, holding);
+        updateTotalValueIncludingBonds(stockRepo, null);
     }
 
-    //Update portfolio total value including cash balance
-    public void updateTotalValue(StockRepository stockRepo){
+    public Holding getStockHolding(String ticker) {
+        return holdings.get(norm(ticker));
+    }
+
+    public boolean buyStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
+        return executeStockTrade(ticker, qty, OrderType.BUY, stockRepo, transactionRepo);
+    }
+
+    public boolean sellStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
+        return executeStockTrade(ticker, qty, OrderType.SELL, stockRepo, transactionRepo);
+    }
+
+    private boolean executeStockTrade(String ticker, int qty, OrderType orderType,
+                                      StockRepository stockRepo, TransactionRepository transactionRepo) {
+        Stock stock = stockRepo.getStockByTicker(norm(ticker));
+        if (stock == null) {
+            System.out.println("Stock not found: " + ticker);
+            return false;
+        }
+
+        double price = stock.getPrice();
+        double totalValue = price * qty;
+        Holding holding = getStockHolding(ticker);
+
+        if (orderType == OrderType.BUY) {
+            if (getCashBalance() < totalValue) {
+                System.out.println("Not enough funds.");
+                return false;
+            }
+            setCashBalance(getCashBalance() - totalValue);
+            updateStockHolding(ticker, qty, price, true, stockRepo);
+        } else {
+            if (holding == null || holding.getQuantity() < qty) {
+                System.out.println("Not enough shares to sell.");
+                return false;
+            }
+            setCashBalance(getCashBalance() + totalValue);
+            updateStockHolding(ticker, qty, price, false, stockRepo);
+        }
+
+        int trxNumber = transactionRepo.getNextTransactionId();
+        Transaction trx = new Transaction(trxNumber, getOwner().getUserId(), new Date(),
+                ticker, price, stock.getCurrency(), orderType, qty);
+        transactionRepo.writeTransaction(trx);
+
+        return true;
+    }
+
+    private void updateStockHolding(String ticker, int qty, double price, boolean isBuy, StockRepository stockRepo) {
+        String key = norm(ticker);
+        Holding holding = holdings.get(key);
+
+        if (isBuy) {
+            if (holding == null) {
+                holding = new Holding(ticker, qty, price);
+            } else {
+                int oldQty = holding.getQuantity();
+                double oldAvgPrice = holding.getPurchasePriceDKK();
+                int newQty = oldQty + qty;
+                double newAvgPrice = ((oldQty * oldAvgPrice) + (qty * price)) / newQty;
+                holding.setQuantity(newQty);
+                holding.setPurchasePriceDKK(newAvgPrice);
+            }
+            holdings.put(key, holding);
+        } else {
+            int newQty = holding.getQuantity() - qty;
+            if (newQty > 0) {
+                holding.setQuantity(newQty);
+                holdings.put(key, holding);
+            } else {
+                holdings.remove(key);
+            }
+        }
+
+        updateTotalValueIncludingBonds(stockRepo, null);
+    }
+
+    // ----------------------------
+    // Bond Methods
+    // ----------------------------
+    public void addBondHolding(Holding holding, BondRepository bondRepo) {
+        String key = norm(holding.getTicker());
+        bondHoldings.put(key, holding);
+        updateTotalValueIncludingBonds(null, bondRepo);
+    }
+
+    public Holding getBondHolding(String ticker) {
+        return bondHoldings.get(norm(ticker));
+    }
+
+    public boolean buyBond(String ticker, int qty, CSVBondRepository bondRepo, TransactionRepository transactionRepo) {
+        Bond bond = bondRepo.getBondByTicker(ticker);
+        if (bond == null) {
+            System.out.println("Bond not found: " + ticker);
+            return false;
+        }
+
+        double price = bond.getPrice();
+        double totalValue = price * qty;
+
+        if (getCashBalance() < totalValue) {
+            System.out.println("Not enough cash to buy bond.");
+            return false;
+        }
+
+        setCashBalance(getCashBalance() - totalValue);
+
+        Holding holding = getBondHolding(ticker);
+        if (holding == null) {
+            holding = new Holding(ticker, qty, price);
+        } else {
+            int oldQty = holding.getQuantity();
+            double oldAvgPrice = holding.getPurchasePriceDKK();
+            int newQty = oldQty + qty;
+            double newAvgPrice = ((oldQty * oldAvgPrice) + (qty * price)) / newQty;
+            holding.setQuantity(newQty);
+            holding.setPurchasePriceDKK(newAvgPrice);
+        }
+        addBondHolding(holding, bondRepo);
+
+        int trxNumber = transactionRepo.getNextTransactionId();
+        Transaction trx = new Transaction(trxNumber, getOwner().getUserId(), new Date(),
+                ticker, price, bond.getCurrency(), OrderType.BUY, qty);
+        transactionRepo.writeTransaction(trx);
+
+        return true;
+    }
+
+    public boolean sellBond(String ticker, int qty, CSVBondRepository bondRepo, TransactionRepository transactionRepo) {
+        Holding holding = getBondHolding(ticker);
+        if (holding == null || holding.getQuantity() < qty) {
+            System.out.println("Not enough bonds to sell.");
+            return false;
+        }
+
+        Bond bond = bondRepo.getBondByTicker(ticker);
+        if (bond == null) {
+            System.out.println("Bond not found: " + ticker);
+            return false;
+        }
+
+        double price = bond.getPrice();
+        setCashBalance(getCashBalance() + price * qty);
+
+        int newQty = holding.getQuantity() - qty;
+        if (newQty > 0) {
+            holding.setQuantity(newQty);
+            bondHoldings.put(norm(ticker), holding);
+        } else {
+            bondHoldings.remove(norm(ticker));
+        }
+
+        int trxNumber = transactionRepo.getNextTransactionId();
+        Transaction trx = new Transaction(trxNumber, getOwner().getUserId(), new Date(),
+                ticker, price, bond.getCurrency(), OrderType.SELL, qty);
+        transactionRepo.writeTransaction(trx);
+
+        updateTotalValueIncludingBonds(null, bondRepo);
+
+        return true;
+    }
+
+    // ----------------------------
+    // Total Value Update
+    // ----------------------------
+    public void updateTotalValueIncludingBonds(StockRepository stockRepo, BondRepository bondRepo) {
         double holdingsValue = 0.0;
+
+        // Stocks
         for (Holding h : holdings.values()) {
             if (stockRepo != null) {
                 Stock s = stockRepo.getStockByTicker(h.getTicker());
-                if (s != null) {
-                    h.setCurrentPriceDKK(s.getPrice());
-                } else {
-                    h.updateCurrentPriceDKK();
-                }
+                if (s != null) h.setCurrentPriceDKK(s.getPrice());
+                else h.updateCurrentPriceDKK();
+            } else {
+                h.updateCurrentPriceDKK();
+            }
+            holdingsValue += h.getCurrentPriceDKK() * h.getQuantity();
+        }
+
+        // Bonds
+        for (Holding h : bondHoldings.values()) {
+            if (bondRepo != null) {
+                Bond b = bondRepo.getBondByTicker(h.getTicker());
+                if (b != null) h.setCurrentPriceDKK(b.getPrice());
+                else h.updateCurrentPriceDKK();
             } else {
                 h.updateCurrentPriceDKK();
             }
@@ -84,335 +257,29 @@ public class Portfolio {
         this.totalValueDKK = holdingsValue + getCashBalance();
     }
 
-    //Executing trades
-    public boolean buyStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
-        return executeTrade(ticker, qty, OrderType.BUY, stockRepo, transactionRepo);
-    }
-    public boolean sellStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo) {
-        return executeTrade(ticker, qty, OrderType.SELL, stockRepo, transactionRepo);
-    }
-    private boolean executeTrade(String ticker, int qty, OrderType orderType,
-                                 StockRepository stockRepo, TransactionRepository transactionRepo) {
-        Stock stock = stockRepo.getStockByTicker(norm(ticker));
-        if (stock == null) {
-            System.out.println("Stock not found: " + ticker);
-            return false;
-        }
-
-        double price = stock.getPrice();
-        double totalValue = price * qty;
-
-        Holding holding = get(ticker);
-
-        if (orderType == OrderType.BUY) {
-            if (getCashBalance() < totalValue) {
-                System.out.println("Not enough funds. Required: " + totalValue +
-                        ", Available: " + getCashBalance());
-                return false;
-            }
-
-            // Deduct balance
-            setCashBalance(getCashBalance() - totalValue);
-
-            // Update holdings
-            updateHolding(ticker, qty, price, true, stockRepo);
-
-        } else if (orderType == OrderType.SELL) {
-            if (holding == null || holding.getQuantity() < qty) {
-                System.out.println("Not enough shares to sell. Holding: " +
-                        (holding != null ? holding.getQuantity() : 0));
-                return false;
-            }
-
-            // Add balance
-            setCashBalance(getCashBalance() + totalValue);
-
-            // Update holdings
-            updateHolding(ticker, qty, price, false, stockRepo);
-        }
-
-        // Log transaction
-        int trxNumber = transactionRepo.getNextTransactionId();
-        Transaction trx = new Transaction(trxNumber, getOwner().getUserId(), new Date(),
-                ticker, price, stock.getCurrency(), orderType, qty);
-        transactionRepo.writeTransaction(trx);
-
-        return true;
-    }
-
-
-    private void updateHolding(String ticker, int qty, double price, boolean isBuy, StockRepository stockRepo) {
-        String key = norm(ticker);
-        Holding holding = getHoldings().get(key);
-        if (isBuy) {
-            if (holding == null) {
-                // New holding with initial purchase price
-                holding = new Holding(ticker, qty, price);
-            } else {
-                // BUY: Weighted average purchase price
-                int oldQty = holding.getQuantity();
-                double oldAvgPrice = holding.getPurchasePriceDKK();
-                int newQty = oldQty + qty;
-                double newAvgPrice = ((oldQty * oldAvgPrice) + (qty * price)) / newQty;
-
-                holding.setQuantity(newQty);
-                holding.setPurchasePriceDKK(newAvgPrice);
-            }
-            addHolding(holding, stockRepo);
-        } else {
-            // SELL: Reduce quantity, keep purchase price unchanged
-            int newQuantity = holding.getQuantity() - qty;
-            if (newQuantity > 0) {
-                holding.setQuantity(newQuantity);
-                addHolding(holding, stockRepo);
-            } else {
-                removeHolding(key, stockRepo);
-            }
-        }
-    }
-
-    //Rebuilding holdings from transactions
-    public void rebuildHoldingsfromTransactions(List<Transaction> transactions, StockRepository stockRepo) {
-        holdings.clear();
-        // Use owner's initial cash
-        cashBalance = owner.getInitialCashDKK();
-        totalValueDKK = cashBalance;
-
-        if (stockRepo == null) {
-            System.out.println("Stock repository is null. Cannot update current prices.");
-            return;
-        }
-        if (transactions == null || transactions.isEmpty()) {
-            return;
-        }
-        // Ensure transactions are in chronological order
-        transactions.sort(Comparator.comparing(Transaction::getDate).thenComparing(Transaction::getID));
-
-        for (Transaction trx : transactions) {
-            String ticker = trx.getTicker();
-            String key = norm(ticker);
-            int qty = trx.getQuantity();
-            if (qty <= 0) {
-                System.out.println("Skipping invalid transaction with non-positive quantity: " + qty);
-                continue; // Skip invalid transactions
-            }
-            double price = trx.getPrice();
-            if (price <= 0) {
-                System.out.println("Skipping invalid transaction with non-positive price: " + price);
-                continue;
-            }
-            OrderType type = trx.getOrderType();
-
-            Holding h = holdings.get(key);
-
-            if (type == OrderType.BUY) {
-                // Deduct cash
-                this.cashBalance -= qty * price;
-
-                if (h == null) {
-                    h = new Holding(ticker, qty, price);
-                } else {
-                    // weighted average purchase price
-                    int oldQty = h.getQuantity();
-                    double oldAvg = h.getPurchasePriceDKK();
-                    int newQty = oldQty + qty;
-                    double newAvg = (oldQty * oldAvg + qty * price) / newQty;
-                    h.setQuantity(newQty);
-                    h.setPurchasePriceDKK(newAvg);
-                }
-                holdings.put(key, h);
-
-            } else if (type == OrderType.SELL) {
-                if (h == null) {
-                    continue; // Selling non-existing holding: ignore
-                }
-
-                int availableQty = h.getQuantity();
-                if (qty > availableQty) {
-                    continue; // Ignore invalid sell (cannot sell more than owned)
-                }
-                this.cashBalance += qty * price;
-
-                if (h == null) {
-                    // selling non-existing holding: ignore (or handle differently if desired)
-                    continue;
-                }
-                int remaining = h.getQuantity() - qty;
-                if (remaining > 0) {
-                    h.setQuantity(remaining);
-                    holdings.put(key, h);
-                } else {
-                    holdings.remove(key);
-                }
-            }
-        }
-
-        // Update current prices for holdings using stockRepo (and compute total)
-        double holdingsValue = 0.0;
-        for (Holding h : holdings.values()) {
-            Stock stock = stockRepo.getStockByTicker(h.getTicker());
-            if (stock != null) {
-                h.setCurrentPriceDKK(stock.getPrice());
-            } else {
-                h.setCurrentPriceDKK(h.getPurchasePriceDKK()); // fallback
-            }
-            holdingsValue += h.getCurrentPriceDKK() * h.getQuantity();
-        }
-        this.totalValueDKK = this.cashBalance + holdingsValue;
-    }
-
-    //Print Holdings
+    // ----------------------------
+    // NEW: Print Holdings
+    // ----------------------------
     public void printHoldings() {
-        System.out.println("Holdings for user: " + owner.getFullName());
+        System.out.println("Cash: " + getCashBalance() + " DKK");
 
-        if (holdings == null || holdings.isEmpty()) {
-            System.out.println("  (No holdings)");
-            return;
-        }
-
-        System.out.println("  Ticker     Quantity     CurrentPriceDKK     TotalDKK");
-        System.out.println("  ----------------------------------------------------");
-
+        System.out.println("\nStocks:");
         for (Holding h : holdings.values()) {
-            double currentPrice = h.getCurrentPriceDKK();
-            double total = currentPrice * h.getQuantity();
-
-            System.out.printf(
-                    "  %-10s %-10d %-17.2f %-10.2f%n",
-                    h.getTicker(),
-                    h.getQuantity(),
-                    currentPrice,
-                    total
-            );
+            System.out.println(h.getTicker() + " | Qty: " + h.getQuantity() +
+                    " | Purchase Price DKK: " + h.getPurchasePriceDKK() +
+                    " | Current Price DKK: " + h.getCurrentPriceDKK());
         }
 
-        System.out.println();
+        System.out.println("\nBonds:");
+        for (Holding h : bondHoldings.values()) {
+            System.out.println(h.getTicker() + " | Qty: " + h.getQuantity() +
+                    " | Purchase Price DKK: " + h.getPurchasePriceDKK() +
+                    " | Current Price DKK: " + h.getCurrentPriceDKK());
+        }
+
+        System.out.println("\nTotal Portfolio Value: " + getTotalValueDKK() + " DKK");
     }
 
-    //Samlet investeret beløb i DKK (antal * købspris)
-     public double calculateTotalInvestedDKK() {
-         double total = 0.0;
-         for (Holding h : holdings.values()) {
-             double investedInHolding = h.getQuantity() * h.getPurchasePriceDKK();
-             System.out.println("[Invested] " + h.getTicker() + ": "
-                     + h.getQuantity() + " qty * " + h.getPurchasePriceDKK()
-                     + " = " + investedInHolding + " DKK");
-
-             total += investedInHolding;
-         }
-         System.out.println("[Total invested] " + total + " DKK\n");
-         return total;
-     }
-
-    // Samlet nuværende værdi af alle holdings i DKK (antal * nuværende pris).
-    // Opdaterer samtidig currentPriceDKK på hver holding ud fra stockRepo.
-
-    public double calculateCurrentHoldingsValueDKK(StockRepository stockRepo) {
-        double value = 0.0;
-
-        for (Holding h : holdings.values()) {
-            double oldPrice = h.getCurrentPriceDKK();
-
-            if (stockRepo != null) {
-                Stock s = stockRepo.getStockByTicker(h.getTicker());
-                if (s != null) {
-                    h.setCurrentPriceDKK(s.getPrice());
-                } else {
-                    h.setCurrentPriceDKK(h.getPurchasePriceDKK());
-                }
-            } else {
-                h.setCurrentPriceDKK(h.getPurchasePriceDKK());
-            }
-
-            double newPrice = h.getCurrentPriceDKK();
-
-            System.out.println("[Update] " + h.getTicker()
-                    + " old price: " + oldPrice
-                    + " → new price: " + newPrice);
-
-            double holdingValue = newPrice * h.getQuantity();
-
-            System.out.println("[Current value] " + h.getTicker() + ": "
-                    + h.getQuantity() + " qty * " + newPrice
-                    + " = " + holdingValue + " DKK");
-
-            value += holdingValue;
-        }
-
-        System.out.println("[TOTAL HOLDING VALUE] " + value + " DKK\n");
-        return value;
-    }
-
-
-    //Samlet porteføljeværdi inkl. kontantbeholdning.
-     public double calculatePortfolioValueIncludingCashDKK(StockRepository stockRepo) {
-         double holdingsValue = calculateCurrentHoldingsValueDKK(stockRepo);
-         double total = holdingsValue + cashBalance;
-
-         System.out.println("[TOTAL PORTFOLIO] Holdings: " + holdingsValue
-                 + " + Cash: " + cashBalance
-                 + " = " + total + " DKK\n");
-
-         return total;
-     }
-
-     //Reelt afkast i DKK (nuværende værdi inkl. kontanter minus investeret beløb).
-     public double calculateRealReturnDKK(StockRepository stockRepo) {
-         double invested = calculateTotalInvestedDKK();
-         double current = calculateCurrentHoldingsValueDKK(stockRepo);
-
-         double realReturn = current - invested;
-
-         System.out.println("[Returns] Current: " + current
-                 + " - Investment: " + invested
-                 + " = " + realReturn + " DKK\n");
-
-         return realReturn;
-     }
-
-    // Procentmæssig stigning i porteføljen.
-    public double calculateReturnPercentage(StockRepository stockRepo) {
-        double invested = calculateTotalInvestedDKK();
-        if (invested == 0) {
-            System.out.println("[Percent] No investment -> 0%");
-            return 0.0;
-        }
-
-        double realReturn = calculateRealReturnDKK(stockRepo);
-        double percentage = (realReturn / invested) * 100.0;
-
-        System.out.println("[PERCENTAGE INCREASE] (" + realReturn + " / "
-                + invested + ") * 100 = " + percentage + "%\n");
-
-        return percentage;
-    }
-
-    public String toString(StockRepository stockRepo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Portfolio for ").append(owner.getFullName()).append("\n");
-        sb.append("CashBalance: ").append(cashBalance).append(" DKK\n");
-        sb.append("Holdings:\n");
-
-        if (holdings.isEmpty()) {
-            sb.append("No stocks in portfolio.\n");
-        } else {
-            for (Holding h : holdings.values()) {
-                sb.append("- ")
-                        .append(h.getTicker())
-                        .append(": ")
-                        .append(h.getQuantity())
-                        .append(" qty | Purcahse price: ")
-                        .append(h.getPurchasePriceDKK())
-                        .append(" DKK | Current price: ")
-                        .append(h.getCurrentPriceDKK())
-                        .append(" DKK\n");
-            }
-        }
-
-        sb.append("Total value of holdings: ")
-                .append(calculateCurrentHoldingsValueDKK(stockRepo))
-                .append(" DKK\n");
-
-        return sb.toString();
+    public void rebuildHoldingsFromTransactions(List<Transaction> transactions, StockRepository stockRepo) {
     }
 }
