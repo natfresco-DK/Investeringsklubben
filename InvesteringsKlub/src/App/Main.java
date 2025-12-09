@@ -23,20 +23,5 @@ public class Main {
         ConsoleInterface console = new ConsoleInterface(userRepo, stockRepo, transactionRepo);
         console.start();
 
-        // Test
-        System.out.println("\n--- All bonds from CSV ---");
-        BondRepository bondRepo = new CSVBondRepository();
-        java.util.List<Domain.Bond> bonds = bondRepo.getAllBonds();
-        if (bonds == null || bonds.isEmpty()) {
-            System.out.println("No bonds found (check CSV path and format).");
-        } else {
-            for (Domain.Bond b : bonds) {
-                System.out.println(b);
-            }
-        }
-        System.out.println("--- End of bonds ---\n");
-
-
-
     }
 }

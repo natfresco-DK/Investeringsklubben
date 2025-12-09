@@ -50,12 +50,7 @@ public class CSVBondRepository implements BondRepository {
                     String name         = f[1];
                     double price        = parsePrice(f[2]);
                     String currency     = f[3];
-
-                    // Bond constructor expects:
-                    // Bond(String ticker, double price, String currency, String name, double couponRate,
-                    //      String maturityDate, String issueDate, String rating, String market, String lastUpdated)
                     Bond bond = new Bond(ticker, price, currency, name);
-
                     bonds.add(bond);
                 } catch (Exception e) {
                     System.err.println("CSV warning. parse error at line " + lineNo + " ==> '" + raw + "'");

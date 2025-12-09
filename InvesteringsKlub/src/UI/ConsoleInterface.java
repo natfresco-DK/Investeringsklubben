@@ -63,7 +63,8 @@ public class ConsoleInterface {
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-                case "1": showStockMarket(); break;
+                //case "1": showStockMarket(); break;
+                case "1": showMarketSelectionMenu(); break;
                 case "2": showPortfolio(); break;
                 case "3": showTransactionsForCurrentUser(); break;
                 case "4": buyStock(); break;
@@ -76,7 +77,7 @@ public class ConsoleInterface {
 
     private void showUserMenu() {
         System.out.println("\n=== User Menu ===");
-        System.out.println("1. View Stock Market");
+        System.out.println("1. View Stock or Bond Market");
         System.out.println("2. View Portfolio");
         System.out.println("3. View Transaction History");
         System.out.println("4. Buy Stock");
@@ -128,11 +129,40 @@ public class ConsoleInterface {
     // ----------------------------
     // Shared Methods
     // ----------------------------
+
+   private void showMarketSelectionMenu(){
+        boolean back = false;
+        while(!back){
+            System.out.println("\n=== Market Selection Menu ===");
+            System.out.println("1. View Stock Market");
+            System.out.println("2. View Bond Market");
+            System.out.println("0. Back to User Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1": showStockMarket(); break;
+                case "2": showBondMarket(); break;
+                case "0": back = true; break;
+                default: System.out.println("Invalid choice. Try again.");
+            }
+        }
+   }
+
+
     private void showStockMarket() {
         System.out.println("\n--- Stock Market ---");
         stockRepo.getAllStocks().forEach(stock ->
-                System.out.println(stock.getTicker() + " | " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency())
+                System.out.println("Ticker: " + stock.getTicker() + " | Name: " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency())
         );
+    }
+
+    private void showBondMarket(){
+        System.out.println("\n--- Bond Market ---");
+        BondRepository bondRepo = new CSVBondRepository();
+        List<Bond> bonds = bondRepo.getAllBonds();
+        for(Bond bond : bonds){
+            System.out.println("Ticker: " + bond.getTicker() + " | Name: " + bond.getName() + " | Price: " + bond.getPrice() + " " + bond.getCurrency());
+        }
     }
 
     private void showPortfolio() {
