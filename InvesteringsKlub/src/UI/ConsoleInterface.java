@@ -217,7 +217,7 @@ public class ConsoleInterface {
     }
 
     // ----------------------------
-    // Leader Menu (unchanged)
+    // Leader Menu
     // ----------------------------
     private void leaderLogin() {
         System.out.println("Hello Leader");
