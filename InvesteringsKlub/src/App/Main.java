@@ -17,11 +17,11 @@ public class Main {
         UserRepository userRepo = new CSVUserRepository();
 
         //Regenerate Users Portfolio from transactions
-        userRepo.addUsersPortfolio(stockRepo,transactionRepo);
-        
+        userRepo.addUsersPortfolio(stockRepo, transactionRepo);
+
         // Start console interface
         ConsoleInterface console = new ConsoleInterface(userRepo, stockRepo, transactionRepo);
         console.start();
+
     }
 }
-
