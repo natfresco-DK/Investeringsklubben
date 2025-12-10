@@ -1,96 +1,87 @@
-
 package CSVHandler;
-
 import Domain.Stock;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class CSVStockRepository implements StockRepository {
     protected List<Stock> stocks = new ArrayList<>();
-    protected final String filePath = "InvesteringsKlub/CSVRepository/stockMarket.csv";
 
-    public CSVStockRepository() {
-        loadStocks(filePath);
+    private static String getCSVPath(String filename) {
+        // Prøv først CSVRepository/ (VS Code working directory)
+        File file = new File("CSVRepository/" + filename);
+        if (file.exists()) {
+            return "CSVRepository/" + filename;
+        }
+        // Ellers brug InvesteringsKlub/CSVRepository/ (IntelliJ working directory)
+        return "InvesteringsKlub/CSVRepository/" + filename;
     }
 
-    // Getters
+    public CSVStockRepository(){
+        loadFromCSV(getCSVPath("stockMarket.csv"));
+    }
+
+    public CSVStockRepository(List<Stock> stocks){
+        this.stocks = stocks;
+    }
+
+    public void addStock(Stock stock){
+        stocks.add(stock);
+    }
+
+    public void clear(){
+        stocks.clear();
+    }
+
     public List<Stock> getAllStocks() {
-        loadStocks(filePath);
-        return stocks;
+        return new ArrayList<>(stocks);
     }
 
     public Stock getStockByTicker(String ticker) {
-        loadStocks(filePath);
+        if (ticker == null) return null;
         for (Stock s : stocks) {
             if (ticker.equalsIgnoreCase(s.getTicker())) {
                 return s;
             }
         }
-        return null;
+        return null; // ikke fundet
     }
 
-    // Load stocks
-    private void loadStocks(String filePath) {
-        stocks.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String raw;
-            int lineNo = 0;
-            while ((raw = br.readLine()) != null) {
-                lineNo++;
-                if (isSkippableLine(raw)) continue;
+    public void loadFromCSV(String filePath) {
+        clear();
+        try (BufferedReader reader = Files.newBufferedReader(
+                Paths.get(filePath), StandardCharsets.UTF_8)) {
+            String line = reader.readLine(); // header
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                String[] parts = line.split(";", -1);
+                if (parts.length < 5) continue;
 
-                String[] f = splitSemicolonTrim(raw);
-                if (f.length < 5) {
-                    System.err.println("CSV warning. too few columns at line " + lineNo + " ==> '" + raw + "'");
-                    continue;
-                }
+                String ticker   = parts[0].trim();
+                String name     = parts[1].trim();
+                String sector   = parts[2].trim();
+                String priceStr = parts[3].trim();
+                String currency = parts[4].trim();
 
-                try {
-                    String ticker   = f[0];
-                    String name     = f[1];
-                    String sector   = f[2];
-                    double price    = parsePrice(f[3]); // handles comma→dot
-                    String currency = f[4];
+                double price = parseDanishDouble(priceStr);
 
-                    Stock stock = new Stock(ticker, price, currency, name, sector);
-                    stocks.add(stock);
-                } catch (Exception e) {
-                    System.err.println("CSV warning at line " + lineNo + ": " + e.getMessage() + " ===> '" + raw + "'");
-                }
+                Stock stock = new Stock(ticker, price, currency, name, sector);
+                addStock(stock);
             }
-        } catch (Exception e) {
-            System.out.println("Error reading CSV file: " + filePath);
+        } catch (IOException e) {
+            System.out.println("Fejl ved læsning af CSV-fil: " + filePath);
             e.printStackTrace();
         }
     }
 
-    // helpers
-    private boolean isSkippableLine(String raw) {
-        if (raw == null) return true;
-        String line = raw.trim();
-        if (line.isEmpty()) return true;
-        return line.toLowerCase(Locale.ROOT).startsWith("ticker;");
+    private double parseDanishDouble(String value) {
+        if (value == null || value.trim().isEmpty()) return 0.0;
+        value = value.replace(",", ".");
+        return Double.parseDouble(value);
     }
-
-    private String[] splitSemicolonTrim(String line) {
-        String[] parts = line.split(";");
-        for (int i = 0; i < parts.length; i++) {
-            parts[i] = parts[i].trim();
-        }
-        return parts;
-    }
-
-    private double parsePrice(String value) {
-        if (value == null) return 0.0;
-        String normalized = value.trim().replace(",", ".");
-        if (normalized.isEmpty()) return 0.0;
-        return Double.parseDouble(normalized);
-    }
-
 }
