@@ -3,10 +3,11 @@ package CSVHandler;
 import Domain.User;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface UserRepository {
     User getUserById(int id);
-    Collection<User> getAllUsers();
+    List<User> getAllUsers();
     void addUsersPortfolio(StockRepository stockRepo, TransactionRepository transactionRepo);
 
 }

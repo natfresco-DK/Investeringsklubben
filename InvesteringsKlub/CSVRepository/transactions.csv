@@ -23,3 +23,4 @@ id;user_id;date;ticker;price;currency;order_type;quantity
 22;1;09-12-2025;Pandora;765.0;DKK;BUY;100
 23;1;09-12-2025;DANSKE;192.0;DKK;BUY;1
 24;1;09-12-2025;GN;210.0;DKK;BUY;10
+
