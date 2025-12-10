@@ -24,12 +24,12 @@ public class CSVTransactionRepository implements TransactionRepository {
         boolean fileExists = file.exists();
 
         try (FileWriter writer = new FileWriter(file, true)) {
-            // skriv header hvis filen ikke findes eller er tom
+
             if (!fileExists || file.length() == 0) {
                 writer.append("ID;UserID;Date;Ticker;Price;Currency;Type;Quantity\n");
             }
 
-            // Gem i korrekt CSV-format, ikke trx.toString()
+
             writer.append(trx.getID() + ";" +
                     trx.getUserID() + ";" +
                     new SimpleDateFormat("dd-MM-yyyy").format(trx.getDate()) + ";" +

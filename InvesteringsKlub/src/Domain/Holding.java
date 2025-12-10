@@ -19,17 +19,13 @@ public class Holding {
         this.currentPriceDKK = purchasePriceDKK; // initially same as purchase
     }
 
-    // ----------------------------
     // Getters
-    // ----------------------------
     public String getTicker() { return ticker; }
     public int getQuantity() { return quantity; }
     public double getPurchasePriceDKK() { return purchasePriceDKK; }
     public double getCurrentPriceDKK() { return currentPriceDKK; }
 
-    // ----------------------------
     // Setters
-    // ----------------------------
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public void setTicker(String ticker) { this.ticker = ticker; }
     public void setCurrentPriceDKK(double currentPriceDKK) { this.currentPriceDKK = currentPriceDKK; }
@@ -38,29 +34,17 @@ public class Holding {
     public void setStockRepo(StockRepository stockRepo) { this.stockRepo = stockRepo; }
     public void setBondRepo(BondRepository bondRepo) { this.bondRepo = bondRepo; }
 
-    // ----------------------------
     // Update current price
-    // ----------------------------
     public void updateCurrentPriceDKK() {
-        // Prøv aktie først
-        if (stockRepo != null) {
-            Stock stock = stockRepo.getStockByTicker(ticker);
-            if (stock != null) {
-                this.currentPriceDKK = stock.getPrice();
-                return;
-            }
+        if (stockRepo != null && stockRepo.getStockByTicker(ticker) != null) {
+            // Hvis tickeren findes som stock
+            this.currentPriceDKK = stockRepo.getStockByTicker(ticker).getPrice();
+        } else if (bondRepo != null && bondRepo.getBondByTicker(ticker) != null) {
+            // Hvis tickeren findes som bond
+            this.currentPriceDKK = bondRepo.getBondByTicker(ticker).getPrice();
+        } else {
+            // Hvis tickeren ikke findes i nogen repo, behold purchasePriceDKK
+            this.currentPriceDKK = this.purchasePriceDKK;
         }
-
-        // Prøv obligation
-        if (bondRepo != null) {
-            Bond bond = bondRepo.getBondByTicker(ticker);
-            if (bond != null) {
-                this.currentPriceDKK = bond.getPrice();
-                return;
-            }
-        }
-
-        // Hvis ingen findes, behold purchasePriceDKK som fallback
-        this.currentPriceDKK = this.purchasePriceDKK;
     }
 }

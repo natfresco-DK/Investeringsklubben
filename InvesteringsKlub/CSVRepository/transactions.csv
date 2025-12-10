@@ -24,3 +24,6 @@ id;user_id;date;ticker;price;currency;order_type;quantity
 23;1;09-12-2025;DKST4Y;102.77;DKK;BUY;10
 24;1;09-12-2025;dkst5y;106.06;DKK;BUY;1
 25;1;09-12-2025;dkst5y;106.06;DKK;BUY;1
+26;1;10-12-2025;dkst4y;102.77;DKK;BUY;10
+27;1;10-12-2025;dkst4y;102.77;DKK;BUY;20
+28;1;10-12-2025;novo-b;710.0;DKK;BUY;10

@@ -45,9 +45,9 @@ public class ConsoleInterface {
         }
     }
 
-    // ----------------------------
+
     // User Login & Menu
-    // ----------------------------
+
     private void userLogin() {
         System.out.print("Input user ID: ");
         int userID = Integer.parseInt(scanner.nextLine());
@@ -94,9 +94,9 @@ public class ConsoleInterface {
         System.out.print("Choose an option: ");
     }
 
-    // ----------------------------
+
     // Show Markets
-    // ----------------------------
+
     private void showStockMarket() {
         System.out.println("\n--- Stock Market ---");
         stockRepo.getAllStocks().forEach(stock ->
@@ -111,9 +111,9 @@ public class ConsoleInterface {
         );
     }
 
-    // ----------------------------
+
     // Portfolio
-    // ----------------------------
+
     private void showPortfolio() {
         Portfolio portfolio = currentUser.getPortfolio();
         System.out.println("\n--- Portfolio ---");
@@ -143,9 +143,9 @@ public class ConsoleInterface {
         System.out.println("Total Portfolio Value: " + portfolio.getTotalValueDKK() + " DKK");
     }
 
-    // ----------------------------
+
     // User Transaction History
-    // ----------------------------
+
     private void showTransactionsForCurrentUser() {
         List<Transaction> transactions = transactionRepo.getTransactionsByUserId(currentUser.getUserId());
 
@@ -174,9 +174,9 @@ public class ConsoleInterface {
         }
     }
 
-    // ----------------------------
+
     // Buy/Sell Stocks
-    // ----------------------------
+
     private void buyStock() {
         System.out.print("Enter ticker to buy: ");
         String ticker = scanner.nextLine().trim();
@@ -195,9 +195,9 @@ public class ConsoleInterface {
         System.out.println(success ? "Stock sold successfully!" : "Failed to sell stock.");
     }
 
-    // ----------------------------
+
     // Buy/Sell Bonds
-    // ----------------------------
+
     private void buyBond() {
         System.out.print("Enter bond ticker to buy: ");
         String ticker = scanner.nextLine().trim();
@@ -216,9 +216,9 @@ public class ConsoleInterface {
         System.out.println(success ? "Bond sold successfully!" : "Failed to sell bond.");
     }
 
-    // ----------------------------
+
     // Leader Menu
-    // ----------------------------
+
     private void leaderLogin() {
         System.out.println("Hello Leader");
         boolean exit = false;
