@@ -89,9 +89,9 @@ public class CSVUserRepository implements UserRepository {
     }
 
     // Add portfolio to user
-    public void addUsersPortfolio(StockRepository stockRepo, TransactionRepository transactionRepo) {
+    public void addUsersPortfolio(StockRepository stockRepo, BondRepository bondRepo, TransactionRepository transactionRepo) {
         for (User user : getAllUsers()) {
-            user.setPortfolio(PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo));
+            user.setPortfolio(PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo));
         }
     }
 

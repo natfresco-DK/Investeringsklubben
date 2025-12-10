@@ -10,14 +10,16 @@ import java.util.stream.Collectors;
 public class ConsoleInterface {
 
     private StockRepository stockRepo;
+    private BondRepository bondRepo;
     private TransactionRepository transactionRepo;
     private UserRepository userRepo;
     private User currentUser;
     private Scanner scanner;
 
-    public ConsoleInterface(UserRepository userRepo, StockRepository stockRepo, TransactionRepository transactionRepo) {
+    public ConsoleInterface(UserRepository userRepo, StockRepository stockRepo, BondRepository bondRepo, TransactionRepository transactionRepo) {
         this.userRepo = userRepo;
         this.stockRepo = stockRepo;
+        this.bondRepo = bondRepo;
         this.transactionRepo = transactionRepo;
         this.scanner = new Scanner(System.in);
     }
@@ -100,7 +102,7 @@ public class ConsoleInterface {
             switch (choice) {
                 case "1": showStockMarket(); break;
                 case "2":
-                    Leaderboard.printAllPortfolios(userRepo,stockRepo,transactionRepo);
+                    Leaderboard.printAllPortfolios(userRepo,stockRepo,bondRepo,transactionRepo);
                     break;
                 case "3": viewTransactionHistoryForUser(); break;
                 case "4": viewMostBoughtStock(); break;
@@ -240,7 +242,7 @@ public class ConsoleInterface {
         String ticker = scanner.nextLine().trim();
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
-        boolean success = currentUser.getPortfolio().buyStock(ticker, qty, stockRepo, transactionRepo);
+        boolean success = currentUser.getPortfolio().buyStock(ticker, qty, stockRepo, transactionRepo, bondRepo);
         if(success) System.out.println("Stock bought successfully!");
         else System.out.println("Failed to buy stock.");
     }
@@ -250,7 +252,7 @@ public class ConsoleInterface {
         String ticker = scanner.nextLine().trim();
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
-        boolean success = currentUser.getPortfolio().sellStock(ticker, qty, stockRepo, transactionRepo);
+        boolean success = currentUser.getPortfolio().sellStock(ticker, qty, stockRepo, transactionRepo, bondRepo);
         if(success) System.out.println("Stock sold successfully!");
         else System.out.println("Failed to sell stock.");
     }

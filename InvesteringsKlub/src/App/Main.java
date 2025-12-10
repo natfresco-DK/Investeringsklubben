@@ -1,6 +1,7 @@
 package App;
 
 import CSVHandler.*;
+import Domain.Bond;
 import UI.ConsoleInterface;
 
 public class Main {
@@ -13,14 +14,17 @@ public class Main {
         //Load Transaction repo
         TransactionRepository transactionRepo = new CSVTransactionRepository();
 
+        //Load Bond repo
+        BondRepository bondRepo = new CSVBondRepository();
+
         //Load User repo
         UserRepository userRepo = new CSVUserRepository();
 
         //Regenerate Users Portfolio from transactions
-        userRepo.addUsersPortfolio(stockRepo, transactionRepo);
+        userRepo.addUsersPortfolio(stockRepo, bondRepo, transactionRepo);
 
         // Start console interface
-        ConsoleInterface console = new ConsoleInterface(userRepo, stockRepo, transactionRepo);
+        ConsoleInterface console = new ConsoleInterface(userRepo, stockRepo, bondRepo, transactionRepo);
         console.start();
 
     }

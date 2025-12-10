@@ -6,7 +6,7 @@ import java.util.*;
 
 public class PortfolioBuilder {
 
-    public static Portfolio buildPortfolio(User user, StockRepository stockRepo,
+    public static Portfolio buildPortfolio(User user, StockRepository stockRepo, BondRepository bondRepo,
                                            TransactionRepository transactionRepo) {
         Portfolio portfolio = new Portfolio(user, user.getInitialCashDKK());
 
@@ -18,7 +18,7 @@ public class PortfolioBuilder {
         portfolio.rebuildHoldingsfromTransactions(transactions, stockRepo);
 
         // Update portfolio totals
-        portfolio.updateTotalValue(stockRepo);
+        portfolio.updateTotalValue(stockRepo, bondRepo);
 
         return portfolio;
     }
