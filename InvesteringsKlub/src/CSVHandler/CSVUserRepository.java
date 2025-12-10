@@ -13,8 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CSVUserRepository implements UserRepository {
-    private Map<Integer, User> users = new HashMap<>();
-    
+    private List<User> users = new ArrayList<>();
     private static String getCSVPath(String filename) {
         // Prøv først CSVRepository/ (VS Code working directory)
         File file = new File("CSVRepository/" + filename);
@@ -34,11 +33,15 @@ public class CSVUserRepository implements UserRepository {
 
     //Getters
     public User getUserById(int id) {
-        return users.get(id);
+
+        for (User u : users) {
+            if (u.getUserId() == id) return u;
+        }
+        throw new NoSuchElementException("No user with id=" + id);
     }
-    public Collection<User> getAllUsers() {
-        loadUsers(filePath);
-        return users.values();
+
+    public List<User> getAllUsers() {
+        return users;
     }
 
     //Load users
@@ -70,7 +73,7 @@ public class CSVUserRepository implements UserRepository {
                     if (birth == null || created == null || updated == null) continue;
 
                     User u = new User(id, fullName, email, birth, initialCash, created, updated);
-                    users.put(id, u);
+                    users.add(u);
 
                 } catch (NumberFormatException e) {
                     System.err.println("CSV warning at line " + lineNo + ": " + e.getMessage() + " -> '" + raw + "'");
