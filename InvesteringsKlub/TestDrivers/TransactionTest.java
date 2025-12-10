@@ -46,7 +46,7 @@ class TransactionTest {
 
     @Test
     void testBuyStockLogsTransaction() {
-        boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+        boolean result = portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         List<Transaction> transactions = transactionRepo.getAllTransactions();
@@ -61,9 +61,9 @@ class TransactionTest {
 
     @Test
     void testSellStockLogsTransaction() {
-        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+        portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
 
-        boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo, bondRepo);
+        boolean result = portfolio.sellStockOrBond("AAPL", 5, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         List<Transaction> transactions = transactionRepo.getAllTransactions();
@@ -78,7 +78,7 @@ class TransactionTest {
 
     @Test
     void testSeeUsersTransactionhistoryTrue(){
-        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+        portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
 
         // Kald testbar metode direkte med userId
         boolean result = user.printTransactionHistory(transactionRepo, user.getUserId());

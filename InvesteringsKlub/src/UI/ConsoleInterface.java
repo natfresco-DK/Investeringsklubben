@@ -69,8 +69,8 @@ public class ConsoleInterface {
                 case "1": showMarketSelectionMenu(); break;
                 case "2": showPortfolio(); break;
                 case "3": showTransactionsForCurrentUser(); break;
-                case "4": buyStock(); break;
-                case "5": sellStock(); break;
+                case "4": buyStockOrBond(); break;
+                case "5": sellStockOrBond(); break;
                 case "0": exit = true; System.out.println("Exiting User Menu."); break;
                 default: System.out.println("Invalid choice. Try again.");
             }
@@ -82,8 +82,8 @@ public class ConsoleInterface {
         System.out.println("1. View Stock or Bond Market");
         System.out.println("2. View Portfolio");
         System.out.println("3. View Transaction History");
-        System.out.println("4. Buy Stock");
-        System.out.println("5. Sell Stock");
+        System.out.println("4. Buy Stock or Bond");
+        System.out.println("5. Sell Stock or Bond");
         System.out.println("0. Exit");
         System.out.print("Choose an option: ");
     }
@@ -234,25 +234,79 @@ public class ConsoleInterface {
         }
     }
 
+    private void buyStockOrBond(){
+        boolean back = false;
+        while(!back){
+            System.out.println("\n=== Buy Stock or Bond ===");
+            System.out.println("1. Buy stock");
+            System.out.println("2. Buy bond");
+            System.out.println("0. Back to User Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1": buyStock(); break;
+                case "2": buyBond(); break;
+                case "0": back = true; break;
+                default: System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private void sellStockOrBond(){
+        boolean back = false;
+        while(!back){
+            System.out.println("\n=== Sell Stock or Bond ===");
+            System.out.println("1. Sell stock");
+            System.out.println("2. Sell bond");
+            System.out.println("0. Back to User Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1": sellStock(); break;
+                case "2": sellBond(); break;
+                case "0": back = true; break;
+                default: System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
     private void buyStock() {
         // Vis stock market først
         showStockMarket();
+        buy();
+    }
 
+    private void sellStock() {
+        showPortfolio();
+        sell();
+    }
+
+    private void buyBond(){
+        showBondMarket();
+        buy();
+    }
+
+    private void sellBond(){
+        showPortfolio();
+        sell();
+    }
+
+    private void buy(){
         System.out.print("\nEnter ticker to buy: ");
         String ticker = scanner.nextLine().trim();
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
-        boolean success = currentUser.getPortfolio().buyStock(ticker, qty, stockRepo, transactionRepo, bondRepo);
-        if(success) System.out.println("Stock bought successfully!");
-        else System.out.println("Failed to buy stock.");
+        boolean success = currentUser.getPortfolio().buyStockOrBond(ticker, qty, stockRepo, transactionRepo, bondRepo);
+        if(success) System.out.println("bought successfully!");
+        else System.out.println("Failed to buy.");
     }
 
-    private void sellStock() {
-        System.out.print("Enter ticker to sell: ");
+    private void sell(){
+        System.out.print("\nEnter ticker to sell: ");
         String ticker = scanner.nextLine().trim();
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
-        boolean success = currentUser.getPortfolio().sellStock(ticker, qty, stockRepo, transactionRepo, bondRepo);
+        boolean success = currentUser.getPortfolio().sellStockOrBond(ticker, qty, stockRepo, transactionRepo, bondRepo);
         if(success) System.out.println("Stock sold successfully!");
         else System.out.println("Failed to sell stock.");
     }

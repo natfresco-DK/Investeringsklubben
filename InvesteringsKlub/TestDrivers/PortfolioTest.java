@@ -40,8 +40,8 @@ class PortfolioTest {
     }
 
     @Test
-    void testBuyStockUpdatesPortfolioandTotalIncludesCash() {
-        boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+    void testBuyStockOrBondUpdatesPortfolioandTotalIncludesCash() {
+        boolean result = portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         Holding holding = portfolio.get("AAPL");
@@ -60,9 +60,9 @@ class PortfolioTest {
     }
 
     @Test
-    void testSellStockUpdatesPortfolio_totalIncludesCash() {
-        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
-        boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo, bondRepo);
+    void testSellStockOrBondUpdatesPortfolio_totalIncludesCash() {
+        portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+        boolean result = portfolio.sellStockOrBond("AAPL", 5, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         Holding holding = portfolio.get("AAPL");
@@ -78,8 +78,8 @@ class PortfolioTest {
     }
 
     @Test
-    void testBuyStockFailsWithInsufficientFunds() {
-        boolean result = portfolio.buyStock("GOOG", 10, stockRepo, transactionRepo, bondRepo); // 2800 * 10 > 10000
+    void testBuyStockOrBondFailsWithInsufficientFunds() {
+        boolean result = portfolio.buyStockOrBond("GOOG", 10, stockRepo, transactionRepo, bondRepo); // 2800 * 10 > 10000
         assertFalse(result);
         assertNull(portfolio.get("GOOG"));
         assertEquals(10000.0, portfolio.getCashBalance(), 0.0001);
@@ -89,9 +89,9 @@ class PortfolioTest {
     }
 
     @Test
-    void testSellStockFailsWithTooManyShares() {
-        portfolio.buyStock("AAPL", 3, stockRepo, transactionRepo, bondRepo);
-        boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo, bondRepo);
+    void testSellStockOrBondFailsWithTooManyShares() {
+        portfolio.buyStockOrBond("AAPL", 3, stockRepo, transactionRepo, bondRepo);
+        boolean result = portfolio.sellStockOrBond("AAPL", 5, stockRepo, transactionRepo, bondRepo);
         assertFalse(result);
 
         assertEquals(3, portfolio.get("AAPL").getQuantity());
@@ -117,7 +117,7 @@ class PortfolioTest {
     @Test
     void testPortfolioReturnCalculations() {
         // Buy 10 AAPL at 150
-        boolean buyResult = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo, bondRepo);
+        boolean buyResult = portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
         assertTrue(buyResult);
 
         Holding holding = portfolio.get("AAPL");

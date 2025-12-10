@@ -87,10 +87,10 @@ public class Portfolio {
     }
 
     //Executing trades
-    public boolean buyStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo, BondRepository bondRepo) {
+    public boolean buyStockOrBond(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo, BondRepository bondRepo) {
         return executeTrade(ticker, qty, OrderType.BUY, stockRepo, transactionRepo, bondRepo);
     }
-    public boolean sellStock(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo, BondRepository bondRepo) {
+    public boolean sellStockOrBond(String ticker, int qty, StockRepository stockRepo, TransactionRepository transactionRepo, BondRepository bondRepo) {
         return executeTrade(ticker, qty, OrderType.SELL, stockRepo, transactionRepo, bondRepo);
     }
 
