@@ -133,8 +133,8 @@ class SectorAndTradingStatisticsTest {
         assertTrue(result.contains("AAPL"));
         assertTrue(result.contains("Apple Inc."));
         assertTrue(result.contains("Technology"));
-        assertTrue(result.contains("10 køb"));
-        assertTrue(result.contains("5 salg"));
+        assertTrue(result.contains("10 purchase"));
+        assertTrue(result.contains("5 sales"));
     }
 
     @Test
