@@ -151,6 +151,24 @@ public class ConsoleInterface {
 
     private void showStockMarket() {
         System.out.println("\n--- Stock Market ---");
+
+        // Gruppér aktier efter sektor
+        Map<String, List<Stock>> stocksBySector = new HashMap<>();
+        for (Stock stock : stockRepo.getAllStocks()) {
+            String sector = stock.getSector();
+            if (sector == null || sector.trim().isEmpty()) {
+                sector = "Other";
+            }
+            stocksBySector.computeIfAbsent(sector, k -> new ArrayList<>()).add(stock);
+        }
+
+        // Vis aktier grupperet efter sektor
+        for (Map.Entry<String, List<Stock>> entry : stocksBySector.entrySet()) {
+            System.out.println("\n=== " + entry.getKey() + " ===");
+            for (Stock stock : entry.getValue()) {
+                System.out.println(stock.getTicker() + " | " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency());
+            }
+        }
         stockRepo.getAllStocks().forEach(stock ->
                 System.out.println("Ticker: " + stock.getTicker() + " | Name: " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency())
         );
@@ -218,7 +236,10 @@ public class ConsoleInterface {
     }
 
     private void buyStock() {
-        System.out.print("Enter ticker to buy: ");
+        // Vis stock market først
+        showStockMarket();
+
+        System.out.print("\nEnter ticker to buy: ");
         String ticker = scanner.nextLine().trim();
         System.out.print("Enter quantity: ");
         int qty = Integer.parseInt(scanner.nextLine().trim());
@@ -315,10 +336,35 @@ public class ConsoleInterface {
         Map<String, Integer> buyCounts = allTransactions.stream()
                 .filter(trx -> trx.getOrderType() == OrderType.BUY)
                 .collect(Collectors.groupingBy(Transaction::getTicker, Collectors.summingInt(Transaction::getQuantity)));
-        if (buyCounts.isEmpty()) { System.out.println("No BUY transactions found."); return; }
-        buyCounts.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .forEach(entry -> System.out.println(entry.getKey() + " | Quantity Bought: " + entry.getValue()));
+
+        if (buyCounts.isEmpty()) {
+            System.out.println("No BUY transactions found.");
+            return;
+        }
+
+        // Gruppér efter sektor
+        Map<String, Map<String, Integer>> stocksBySector = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : buyCounts.entrySet()) {
+            String ticker = entry.getKey();
+            Integer quantity = entry.getValue();
+            Stock stock = stockRepo.getStockByTicker(ticker);
+
+            if (stock != null) {
+                String sector = stock.getSector();
+                if (sector == null || sector.trim().isEmpty()) {
+                    sector = "Other";
+                }
+                stocksBySector.computeIfAbsent(sector, k -> new HashMap<>()).put(ticker, quantity);
+            }
+        }
+
+        // Vis sorteret efter sektor
+        for (Map.Entry<String, Map<String, Integer>> sectorEntry : stocksBySector.entrySet()) {
+            System.out.println("\n=== " + sectorEntry.getKey() + " ===");
+            sectorEntry.getValue().entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .forEach(entry -> System.out.println(entry.getKey() + " | Quantity Bought: " + entry.getValue()));
+        }
     }
 
     private void viewMostSoldStocksBySector() {
@@ -327,16 +373,38 @@ public class ConsoleInterface {
         List<Transaction> sellTransactions = allTransactions.stream()
                 .filter(trx -> trx.getOrderType() == OrderType.SELL)
                 .collect(Collectors.toList());
-        if (sellTransactions.isEmpty()) { System.out.println("No SELL transactions found."); return; }
-        Map<String, Integer> sectorSellCounts = new HashMap<>();
+
+        if (sellTransactions.isEmpty()) {
+            System.out.println("No SELL transactions found.");
+            return;
+        }
+
+        // Gruppér aktier efter sektor med deres solgte mængder
+        Map<String, Map<String, Integer>> stocksBySector = new HashMap<>();
         for (Transaction trx : sellTransactions) {
             Stock stock = stockRepo.getStockByTicker(trx.getTicker());
             if (stock != null) {
                 String sector = stock.getSector();
-                sectorSellCounts.put(sector, sectorSellCounts.getOrDefault(sector, 0) + trx.getQuantity());
+                if (sector == null || sector.trim().isEmpty()) {
+                    sector = "Other";
+                }
+                Map<String, Integer> stocksInSector = stocksBySector.computeIfAbsent(sector, k -> new HashMap<>());
+                stocksInSector.put(trx.getTicker(), stocksInSector.getOrDefault(trx.getTicker(), 0) + trx.getQuantity());
             }
         }
-        if (sectorSellCounts.isEmpty()) { System.out.println("No stocks found with sector information."); return; }
-        sectorSellCounts.forEach((sector, qty) -> System.out.println("Sector: " + sector + " | Quantity Sold: " + qty));
+
+        if (stocksBySector.isEmpty()) {
+            System.out.println("No stocks found with sector information.");
+            return;
+        }
+
+        // Vis top 3 mest solgte aktier per sektor
+        for (Map.Entry<String, Map<String, Integer>> sectorEntry : stocksBySector.entrySet()) {
+            System.out.println("\n=== " + sectorEntry.getKey() + " ===");
+            sectorEntry.getValue().entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .limit(3)
+                    .forEach(entry -> System.out.println(entry.getKey() + " | Quantity Sold: " + entry.getValue()));
+        }
     }
 }

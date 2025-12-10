@@ -7,19 +7,29 @@ import java.util.*;
 import Domain.OrderType;
 import java.text.SimpleDateFormat;
 
-
 public class CSVTransactionRepository implements TransactionRepository {
     protected ArrayList<Transaction> transactions = new ArrayList<>();
     protected final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-    protected final String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
+    
+    private static String getCSVPath(String filename) {
+        // Prøv først CSVRepository/ (VS Code working directory)
+        File file = new File("CSVRepository/" + filename);
+        if (file.exists()) {
+            return "CSVRepository/" + filename;
+        }
+        // Ellers brug InvesteringsKlub/CSVRepository/ (IntelliJ working directory)
+        return "InvesteringsKlub/CSVRepository/" + filename;
+    }
+    
+    protected final String filePath = getCSVPath("transactions.csv");
 
     public CSVTransactionRepository() {
         loadTransactions(filePath);
     }
 
-    //writers
+    // writers
     public void writeTransaction(Transaction trx) {
-        String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
+        String filePath = getCSVPath("transactions.csv");
         File file = new File(filePath);
         boolean fileExists = file.exists();
 
@@ -44,10 +54,10 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
     }
 
-    //getters
+    // getters
     public int getNextTransactionId() {
-        String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
-        int nextId = 1; //Default if file is empty
+        String filePath = getCSVPath("transactions.csv");
+        int nextId = 1; // Default if file is empty
         String lastLine = null;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String raw;
@@ -58,7 +68,7 @@ public class CSVTransactionRepository implements TransactionRepository {
                 lastLine = raw;
             }
         } catch (IOException e) {
-            //If file not found, empty or unreadable, we start from 1
+            // If file not found, empty or unreadable, we start from 1
             return nextId;
         }
         if (lastLine != null) {
@@ -68,14 +78,15 @@ public class CSVTransactionRepository implements TransactionRepository {
                     int lastId = Integer.parseInt(parts[0].trim());
                     nextId = lastId + 1;
                 } catch (NumberFormatException ignored) {
-                    //Malformed last line; keep default nextId = 1
+                    // Malformed last line; keep default nextId = 1
                 }
             }
         }
         return nextId;
     }
+
     public List<Transaction> getTransactionsByUserId(int userId) {
-        String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
+        String filePath = getCSVPath("transactions.csv");
         List<Transaction> result = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -117,91 +128,100 @@ public class CSVTransactionRepository implements TransactionRepository {
 
         return result;
     }
+
     public List<Transaction> getAllTransactions() {
         loadTransactions(filePath);
         return transactions;
     }
 
-    /*public List<Transaction> getAllTransactions() {
-        String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
-        // Primary parser matches Date.toString() like: Tue Dec 02 23:24:40 CET 2025
-        SimpleDateFormat primarySdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-        // Add common CSV date formats as fallbacks
-        SimpleDateFormat dashSdf = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat slashSdf = new SimpleDateFormat("dd/MM/yyyy");
-        // Older code used space-separated day month year
-        SimpleDateFormat spaceSdf = new SimpleDateFormat("dd MM yyyy");
-        // ISO with timezone
-        SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    /*
+     * public List<Transaction> getAllTransactions() {
+     * String filePath = "InvesteringsKlub/CSVRepository/transactions.csv";
+     * // Primary parser matches Date.toString() like: Tue Dec 02 23:24:40 CET 2025
+     * SimpleDateFormat primarySdf = new
+     * SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+     * // Add common CSV date formats as fallbacks
+     * SimpleDateFormat dashSdf = new SimpleDateFormat("dd-MM-yyyy");
+     * SimpleDateFormat slashSdf = new SimpleDateFormat("dd/MM/yyyy");
+     * // Older code used space-separated day month year
+     * SimpleDateFormat spaceSdf = new SimpleDateFormat("dd MM yyyy");
+     * // ISO with timezone
+     * SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+     * 
+     * try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+     * String raw;
+     * int lineNo = 0;
+     * while ((raw = br.readLine()) != null) {
+     * lineNo++;
+     * if (isSkippableLine(raw)) continue;
+     * 
+     * String[] parts = splitSemicolonTrim(raw);
+     * if (parts.length < 8) {
+     * System.err.println("CSV warning: too few columns at line " + lineNo + " -> '"
+     * + raw + "'");
+     * continue;
+     * }
+     * 
+     * try {
+     * int id = Integer.parseInt(parts[0]);
+     * int userId = Integer.parseInt(parts[1]);
+     * 
+     * String dateStr = parts[2];
+     * Date date;
+     * try {
+     * date = primarySdf.parse(dateStr);
+     * } catch (ParseException e1) {
+     * try { date = sdf.parse(dateStr); }
+     * catch (ParseException e2) {
+     * try { date = slashSdf.parse(dateStr); }
+     * catch (ParseException e3) {
+     * try { date = spaceSdf.parse(dateStr); }
+     * catch (ParseException e4) {
+     * try { date = isoSdf.parse(dateStr); }
+     * catch (ParseException e5) {
+     * System.err.println("Failed to parse date at line " + lineNo + ": '" + dateStr
+     * + "' -> '" + raw + "'");
+     * continue;
+     * }
+     * }
+     * }
+     * }
+     * }
+     * 
+     * String ticker = parts[3];
+     * double price = Double.parseDouble(parts[4].replace(",", "."));
+     * String currency = parts[5];
+     * Domain.OrderType orderType =
+     * Domain.OrderType.valueOf(parts[6].toUpperCase(Locale.ROOT));
+     * int quantity = Integer.parseInt(parts[7]);
+     * 
+     * transactions.add(new Transaction(id, userId, date, ticker, price, currency,
+     * orderType, quantity));
+     * } catch (IllegalArgumentException e) {
+     * System.err.println("CSV warning at line: " + lineNo + ": " + e.getMessage() +
+     * " -> '" + raw + "'");
+     * }
+     * }
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * }
+     * 
+     * return transactions;
+     * 
+     * }
+     */
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String raw;
-            int lineNo = 0;
-            while ((raw = br.readLine()) != null) {
-                lineNo++;
-                if (isSkippableLine(raw)) continue;
-
-                String[] parts = splitSemicolonTrim(raw);
-                if (parts.length < 8) {
-                    System.err.println("CSV warning: too few columns at line " + lineNo + " -> '" + raw + "'");
-                    continue;
-                }
-
-                try {
-                    int id = Integer.parseInt(parts[0]);
-                    int userId = Integer.parseInt(parts[1]);
-
-                    String dateStr = parts[2];
-                    Date date;
-                    try {
-                        date = primarySdf.parse(dateStr);
-                    } catch (ParseException e1) {
-                        try { date = sdf.parse(dateStr); }
-                        catch (ParseException e2) {
-                            try { date = slashSdf.parse(dateStr); }
-                            catch (ParseException e3) {
-                                try { date = spaceSdf.parse(dateStr); }
-                                catch (ParseException e4) {
-                                    try { date = isoSdf.parse(dateStr); }
-                                    catch (ParseException e5) {
-                                        System.err.println("Failed to parse date at line " + lineNo + ": '" + dateStr + "' -> '" + raw + "'");
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    String ticker = parts[3];
-                    double price = Double.parseDouble(parts[4].replace(",", "."));
-                    String currency = parts[5];
-                    Domain.OrderType orderType = Domain.OrderType.valueOf(parts[6].toUpperCase(Locale.ROOT));
-                    int quantity = Integer.parseInt(parts[7]);
-
-                    transactions.add(new Transaction(id, userId, date, ticker, price, currency, orderType, quantity));
-                } catch (IllegalArgumentException e) {
-                    System.err.println("CSV warning at line: " + lineNo + ": " + e.getMessage() + " -> '" + raw + "'");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return transactions;
-
-    }*/
-
-    //load transaction
+    // load transaction
     private void loadTransactions(String filePath) {
         transactions.clear(); // Clear existing transactions
 
-
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String raw;
             int lineNo = 0;
             while ((raw = br.readLine()) != null) {
                 lineNo++;
-                if (isSkippableLine(raw)) continue;
+                if (isSkippableLine(raw))
+                    continue;
 
                 String[] f = splitSemicolonTrim(raw);
                 if (f.length < 8) {
@@ -231,7 +251,7 @@ public class CSVTransactionRepository implements TransactionRepository {
         }
     }
 
-    //helpers
+    // helpers
     private boolean isSkippableLine(String raw) {
         if (raw == null) {
             return true;
@@ -249,9 +269,9 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     private String[] splitSemicolonTrim(String line) {
         String[] parts = line.split(";");
-        for (int i = 0; i < parts.length; i++) parts[i] = parts[i].trim();
+        for (int i = 0; i < parts.length; i++)
+            parts[i] = parts[i].trim();
         return parts;
     }
 
 }
-
