@@ -47,6 +47,19 @@ Choose an option:
  - calls view stocks by most bought method
 7. View most sold stocks by sectors
  - calls view all stocks by sectors method
+8. Member Setting Menu
+    - calls member setting menu method
 0. Exit
 - closes application
 Choose an option:
+
+"Member Setting Menu"
+=== Member Setting Menu ===
+1. Add Member
+    - calls add member method
+// Fremtidige funktioner
+2. Remove Member
+    - calls remove member method
+3. Edit Member
+    - calls edit member method
+0. Back to Leader Menu

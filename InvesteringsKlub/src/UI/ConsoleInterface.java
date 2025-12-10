@@ -107,11 +107,13 @@ public class ConsoleInterface {
                 case "5": viewMostSoldStock(); break;
                 case "6": viewStocksSortedByMostBought(); break;
                 case "7": viewMostSoldStocksBySector(); break;
+                case "8": leaderSettingsMembers(); break;
                 case "0": exit = true; System.out.println("Exiting Leader Menu."); break;
                 default: System.out.println("Invalid choice. Try again.");
             }
         }
     }
+
 
     private void showLeaderMenu() {
         System.out.println("\n=== Leader Menu ===");
@@ -122,9 +124,49 @@ public class ConsoleInterface {
         System.out.println("5. View Most Sold Stock");
         System.out.println("6. View Stocks Sorted by Most Bought");
         System.out.println("7. View Most Sold Stocks by Sector");
+        System.out.println("8. View Member Settings Menu");
         System.out.println("0. Exit");
         System.out.print("Choose an option: ");
     }
+
+// Member Settings Menu - Placeholder for future implementation
+
+    private void showSettingsMemberMenu(){
+        System.out.println("\n=== Settings Menu ===");
+        System.out.println("1. Add member");
+        System.out.println("2. Remove member" + "Fremtidig opdatierng");
+        System.out.println("3. Edit member" + "Fremtidig opdatierng");
+        System.out.println("0. Back to Leader Menu");
+        System.out.print("Choose an option: ");
+    }
+
+    private void leaderSettingsMembers() {
+        System.out.println("Hello Leader - Member Settings");
+        boolean exit = false;
+
+        while (!exit) {
+            showSettingsMemberMenu();
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+               // case "1": addMember(); break;
+               // case "2": removeMember(); break;
+               // case "3": editMember(); break;
+                case "1": showStockMarket(); break;
+                case "0":
+                    exit = true;
+                    System.out.println("Exiting Leader Menu - Member Settings.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+
+
+
+
 
     // ----------------------------
     // Shared Methods
@@ -147,7 +189,6 @@ public class ConsoleInterface {
             }
         }
    }
-
 
     private void showStockMarket() {
         System.out.println("\n--- Stock Market ---");
