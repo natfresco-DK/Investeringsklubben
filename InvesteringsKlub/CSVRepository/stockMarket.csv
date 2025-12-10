@@ -1,5 +1,5 @@
 ticker;name;sector;price;currency;rating;dividend_yield;market;last_updated
-NOVO-B;Novozymes B;Health Care;710;DKK;AA;1,6;Nasdaq Copenhagen;22-04-2025
+NOVO-B;Novo Nordisk B;Health Care;710;DKK;AA;1,6;Nasdaq Copenhagen;22-04-2025
 MAERSK-B;A,P, Møller - Mærsk B;Industrials;13450;DKK;A+;0,5;Nasdaq Copenhagen;22-04-2025
 CARL-B;Carlsberg B;Consumer Goods;950;DKK;A;2,2;Nasdaq Copenhagen;22-04-2025
 DANSKE;Danske Bank;Financials;192;DKK;BBB+;4,5;Nasdaq Copenhagen;22-04-2025

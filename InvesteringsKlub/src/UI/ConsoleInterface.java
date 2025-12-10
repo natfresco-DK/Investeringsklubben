@@ -166,12 +166,9 @@ public class ConsoleInterface {
         for (Map.Entry<String, List<Stock>> entry : stocksBySector.entrySet()) {
             System.out.println("\n=== " + entry.getKey() + " ===");
             for (Stock stock : entry.getValue()) {
-                System.out.println(stock.getTicker() + " | " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency());
+                System.out.println("Ticker: " + stock.getTicker() + " | Name: " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency());
             }
         }
-        stockRepo.getAllStocks().forEach(stock ->
-                System.out.println("Ticker: " + stock.getTicker() + " | Name: " + stock.getName() + " | Price: " + stock.getPrice() + " " + stock.getCurrency())
-        );
     }
 
     private void showBondMarket(){
