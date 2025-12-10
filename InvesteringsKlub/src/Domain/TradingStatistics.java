@@ -48,7 +48,7 @@ public class TradingStatistics {
 
     @Override
     public String toString() {
-        return String.format("%s (%s) - %s: %d purcahse, %d sales",
+        return String.format("%s (%s) - %s: %d purchase, %d sales",
             ticker, stockName, sector.getDisplayName(), totalBuys, totalSells);
     }
 
