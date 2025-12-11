@@ -7,7 +7,6 @@ public class Holding {
     protected int quantity;
     protected double purchasePriceDKK;
     protected double currentPriceDKK;
-    protected StockRepository stockRepo;
 
     public Holding(){}
     public Holding(String ticker, int quantity, double purchasePriceDKK) {
@@ -44,11 +43,5 @@ public class Holding {
     }
     public void setPurchasePriceDKK(double purchasePriceDKK) {
         this.purchasePriceDKK = purchasePriceDKK;
-    }
-
-    //Update stock price from stock repository
-    public void updateCurrentPriceDKK(){
-        Stock stock = stockRepo.getStockByTicker(ticker);
-        this.currentPriceDKK = stock.getPrice();
     }
 }

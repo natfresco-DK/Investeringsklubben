@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TransactionTest {
 
     private InMemoryStockRepository stockRepo;
+    private InMemoryBondRepository bondRepo;
     private InMemoryTransactionRepository transactionRepo;
     private User user;
     private Portfolio portfolio;
@@ -18,6 +19,8 @@ class TransactionTest {
         stockRepo = new InMemoryStockRepository();
         stockRepo.addStock(new Stock("AAPL", 150.0, "DKK", "Apple inc.","Tech"));
         stockRepo.addStock(new Stock("GOOG", 2800.0, "DKK", "Google inc.","Tech"));
+
+        bondRepo = new InMemoryBondRepository();
 
         // In-memory transaction repository
         transactionRepo = new InMemoryTransactionRepository();
@@ -43,7 +46,7 @@ class TransactionTest {
 
     @Test
     void testBuyStockLogsTransaction() {
-        boolean result = portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+        boolean result = portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         List<Transaction> transactions = transactionRepo.getAllTransactions();
@@ -58,9 +61,9 @@ class TransactionTest {
 
     @Test
     void testSellStockLogsTransaction() {
-        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+        portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
 
-        boolean result = portfolio.sellStock("AAPL", 5, stockRepo, transactionRepo);
+        boolean result = portfolio.sellStockOrBond("AAPL", 5, stockRepo, transactionRepo, bondRepo);
         assertTrue(result);
 
         List<Transaction> transactions = transactionRepo.getAllTransactions();
@@ -75,7 +78,7 @@ class TransactionTest {
 
     @Test
     void testSeeUsersTransactionhistoryTrue(){
-        portfolio.buyStock("AAPL", 10, stockRepo, transactionRepo);
+        portfolio.buyStockOrBond("AAPL", 10, stockRepo, transactionRepo, bondRepo);
 
         // Kald testbar metode direkte med userId
         boolean result = user.printTransactionHistory(transactionRepo, user.getUserId());
