@@ -8,9 +8,9 @@ import java.util.List;
 
 public class Leaderboard {
 
-    public static void printAllPortfolios(UserRepository userRepo, StockRepository stockRepo, TransactionRepository transactionRepo) {
+    public static void printAllPortfolios(UserRepository userRepo, StockRepository stockRepo, BondRepository bondRepo, TransactionRepository transactionRepo) {
         // Assign portfolios to users
-        userRepo.addUsersPortfolio(stockRepo, transactionRepo);
+        userRepo.addUsersPortfolio(stockRepo, bondRepo,transactionRepo);
         System.out.println(userRepo.getUserById(1).getPortfolio().getTotalValueDKK());
         System.out.println("\n===== USER PORTFOLIO LEADERBOARD =====\n");
 

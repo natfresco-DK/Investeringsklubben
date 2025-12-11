@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PortfolioBuilderTest {
 
     private InMemoryStockRepository stockRepo;
+    private InMemoryBondRepository bondRepo;
     private InMemoryTransactionRepository transactionRepo;
     private User user;
     private File tempCsvFile;
@@ -22,7 +23,9 @@ class PortfolioBuilderTest {
         stockRepo = new InMemoryStockRepository();
         stockRepo.addStock(new Stock("AAPL", 150.0, "DKK", "Apple Inc.", "Tech"));
         stockRepo.addStock(new Stock("GOOG", 2800.0, "DKK", "Google Inc.", "Tech"));
-
+        // Set up in-memory bonds
+        bondRepo = new InMemoryBondRepository();
+        bondRepo.addBond(new Bond("DKK1Y", 98, "DKK", "Dansk"));
         // In-memory transactions
         transactionRepo = new InMemoryTransactionRepository();
 
@@ -35,9 +38,11 @@ class PortfolioBuilderTest {
         Date txDate = new Date();
         transactionRepo.writeTransaction(new Transaction(1, user.getUserId(), txDate, "AAPL", 150.0, "DKK", OrderType.BUY, 10));
         transactionRepo.writeTransaction(new Transaction(2, user.getUserId(), txDate, "AAPL", 150.0, "DKK", OrderType.SELL, 5));
+        transactionRepo.writeTransaction(new Transaction(3,user.getUserId(),txDate,"DKK1Y", 98, "DKK", OrderType.BUY, 10));
+        transactionRepo.writeTransaction(new Transaction(3,user.getUserId(),txDate,"DKK1Y", 98, "DKK", OrderType.SELL, 5));
 
         // Verify transactions exist
-        assertEquals(2, transactionRepo.getTransactionsByUserId(user.getUserId()).size());
+        assertEquals(4, transactionRepo.getTransactionsByUserId(user.getUserId()).size());
 
         // Temporary CSV file (not used by builder but kept for compatibility)
         tempCsvFile = File.createTempFile("transactions", ".csv");
@@ -46,14 +51,16 @@ class PortfolioBuilderTest {
             writer.write("userId,date,ticker,price,currency,orderType,quantity\n");
             writer.write("1,2025-11-30,AAPL,150.0,DKK,BUY,10\n");
             writer.write("1,2025-11-30,AAPL,150.0,DKK,SELL,5\n");
+            writer.write("1,2025-11-30,DKK1Y,150.0,DKK,BUY,10\n");
+            writer.write("1,2025-11-30,DKK1Y,150.0,DKK,SELL,5\n");
         }
     }
 
     @Test
     void testBuildPortfolioFromTransactions() {
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
         user.printTransactionHistory(transactionRepo,1);
-        double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0);
+        double expectedCash = 10000.0 - (10 * 150.0) + (5 * 150.0)-(10*98)+(5*98);
         assertEquals(expectedCash, portfolio.getCashBalance());
 
         Holding aapl = portfolio.getHoldings().get("aapl");
@@ -61,17 +68,23 @@ class PortfolioBuilderTest {
         assertEquals(5, aapl.getQuantity());
         assertEquals(150.0, aapl.getPurchasePriceDKK(), 0.01);
 
-        portfolio.updateTotalValue(stockRepo);
-        double expectedTotalValue = expectedCash + (5 * 150.0);
+        Holding dkk1y = portfolio.getHoldings().get("dkk1y");
+        assertNotNull(dkk1y);
+        assertEquals(5,dkk1y.getQuantity());
+        assertEquals(98,dkk1y.getPurchasePriceDKK(),0.01);
+
+
+        portfolio.updateTotalValue(stockRepo, bondRepo);
+        double expectedTotalValue = expectedCash + (5 * 150.0)+(5*98);
         assertEquals(expectedTotalValue, portfolio.getTotalValueDKK(), 0.01);
 
-        assertEquals(2, transactionRepo.getAllTransactions().size());
+        assertEquals(4, transactionRepo.getAllTransactions().size());
     }
 
     @Test
     void testBuildPortfolioWithNoTransactions() {
         transactionRepo.clear(); // remove all transactions
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
 
         assertEquals(user.getInitialCashDKK(), portfolio.getCashBalance(), 0.01);
         assertTrue(portfolio.getHoldings().isEmpty());
@@ -84,7 +97,7 @@ class PortfolioBuilderTest {
         transactionRepo.writeTransaction(new Transaction(3, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 10));
         transactionRepo.writeTransaction(new Transaction(4, user.getUserId(), new Date(), "AAPL", 200.0, "DKK", OrderType.BUY, 10));
 
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
 
         Holding aapl = portfolio.getHoldings().get("aapl");
         assertNotNull(aapl);
@@ -99,7 +112,7 @@ class PortfolioBuilderTest {
         transactionRepo.writeTransaction(new Transaction(5, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 5));
         transactionRepo.writeTransaction(new Transaction(6, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.SELL, 10)); // invalid sell
 
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
 
         Holding aapl = portfolio.getHoldings().get("aapl");
         assertNotNull(aapl);
@@ -113,7 +126,7 @@ class PortfolioBuilderTest {
         transactionRepo.writeTransaction(new Transaction(7, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, 5));
         transactionRepo.writeTransaction(new Transaction(8, user.getUserId(), new Date(), "GOOG", 2800.0, "DKK", OrderType.BUY, 2));
 
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
 
         assertEquals(2, portfolio.getHoldings().size());
         assertTrue(portfolio.getHoldings().containsKey("aapl"));
@@ -125,7 +138,7 @@ class PortfolioBuilderTest {
         transactionRepo.clear();
         transactionRepo.writeTransaction(new Transaction(9, user.getUserId(), new Date(), "AAPL", 150.0, "DKK", OrderType.BUY, -5)); // invalid qty
 
-        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, transactionRepo);
+        Portfolio portfolio = PortfolioBuilder.buildPortfolio(user, stockRepo, bondRepo, transactionRepo);
 
         assertTrue(portfolio.getHoldings().isEmpty());
         assertEquals(user.getInitialCashDKK(), portfolio.getCashBalance(), 0.01);
