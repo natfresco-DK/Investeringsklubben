@@ -183,19 +183,17 @@ public class ConsoleInterface {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             Date birthDate = sdf.parse(birthDateStr);
             
-            System.out.print("Enter initial cash (DKK): ");
+            System.out.print("Enter initial cash (DKK, minimum 10000): ");
             int initialCash = Integer.parseInt(scanner.nextLine().trim());
             
-            // Opret ny bruger med UserBuilder
-            User newUser = new UserBuilder()
-                .setUserId(newUserId)
-                .setFullName(fullName)
-                .setEmail(email)
-                .setBirthDate(birthDate)
-                .setInitialCashDKK(initialCash)
-                .setCreatedAt(new Date())
-                .setLastUpdated(new Date())
-                .build();
+            // Valider minimum startkapital
+            if (initialCash < 10000) {
+                System.out.println("Error: Initial cash must be at least 10000 DKK!");
+                return;
+            }
+            
+            // Opret ny bruger
+            User newUser = User.createNewMember(newUserId, fullName, email, birthDate, initialCash);
             
             // Tilføj bruger til repository
             userRepo.addUser(newUser);

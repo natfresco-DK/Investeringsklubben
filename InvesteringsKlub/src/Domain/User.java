@@ -15,6 +15,12 @@ public class User {
     protected Portfolio portfolio;
 
     public User(){}
+    
+    // Statisk factory metode til at oprette et nyt medlem
+    public static User createNewMember(int userId, String fullName, String email, Date birthDate, int initialCashDKK) {
+        Date now = new Date();
+        return new User(userId, fullName, email, birthDate, initialCashDKK, now, now);
+    }
     public User(int id, String name, String email, Date birth, int initialCashDKK, Date created, Date lastUpdated){
         userId = id;
         fullName = name;
