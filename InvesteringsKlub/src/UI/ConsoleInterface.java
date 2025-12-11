@@ -109,11 +109,13 @@ public class ConsoleInterface {
                 case "5": viewMostSoldStock(); break;
                 case "6": viewStocksSortedByMostBought(); break;
                 case "7": viewMostSoldStocksBySector(); break;
+                case "8": leaderSettingsMembers(); break;
                 case "0": exit = true; System.out.println("Exiting Leader Menu."); break;
                 default: System.out.println("Invalid choice. Try again.");
             }
         }
     }
+
 
     private void showLeaderMenu() {
         System.out.println("\n=== Leader Menu ===");
@@ -124,9 +126,94 @@ public class ConsoleInterface {
         System.out.println("5. View Most Sold Stock");
         System.out.println("6. View Stocks Sorted by Most Bought");
         System.out.println("7. View Most Sold Stocks by Sector");
+        System.out.println("8. View Member Settings Menu");
         System.out.println("0. Exit");
         System.out.print("Choose an option: ");
     }
+
+// Member Settings Menu - Placeholder for future implementation
+
+    private void showSettingsMemberMenu(){
+        System.out.println("\n=== Settings Menu ===");
+        System.out.println("1. Add member");
+        System.out.println("2. Remove member" + "Fremtidig opdatierng");
+        System.out.println("3. Edit member" + "Fremtidig opdatierng");
+        System.out.println("0. Back to Leader Menu");
+        System.out.print("Choose an option: ");
+    }
+
+    private void leaderSettingsMembers() {
+        System.out.println("Hello Leader - Member Settings");
+        boolean exit = false;
+
+        while (!exit) {
+            showSettingsMemberMenu();
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1": addMember(); break;
+               // case "2": removeMember(); break;
+               // case "3": editMember(); break;
+                case "0":
+                    exit = true;
+                    System.out.println("Exiting Leader Menu - Member Settings.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private void addMember() {
+        System.out.println("\n=== Add New Member ===");
+        
+        try {
+            // Generer nyt bruger ID
+            int newUserId = userRepo.getAllUsers().stream()
+                .mapToInt(User::getUserId)
+                .max()
+                .orElse(0) + 1;
+            
+            System.out.print("Enter full name: ");
+            String fullName = scanner.nextLine().trim();
+            
+            System.out.print("Enter email: ");
+            String email = scanner.nextLine().trim();
+            
+            System.out.print("Enter birth date (dd-MM-yyyy): ");
+            String birthDateStr = scanner.nextLine().trim();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            Date birthDate = sdf.parse(birthDateStr);
+            
+            System.out.print("Enter initial cash (DKK, minimum 10000): ");
+            int initialCash = Integer.parseInt(scanner.nextLine().trim());
+            
+            // Valider minimum startkapital
+            if (initialCash < 10000) {
+                System.out.println("Error: Initial cash must be at least 10000 DKK!");
+                return;
+            }
+            
+            // Opret ny bruger
+            User newUser = User.createNewMember(newUserId, fullName, email, birthDate, initialCash);
+            
+            // Tilføj bruger til repository
+            userRepo.addUser(newUser);
+            
+            System.out.println("\nMember added successfully!");
+            System.out.println("User ID: " + newUserId);
+            System.out.println("Name: " + fullName);
+            System.out.println("Initial Cash: " + initialCash + " DKK");
+            
+        } catch (Exception e) {
+            System.out.println("Error adding member: " + e.getMessage());
+        }
+    }
+
+
+
+
+
 
     // ----------------------------
     // Shared Methods
@@ -149,7 +236,6 @@ public class ConsoleInterface {
             }
         }
    }
-
 
     private void showStockMarket() {
         System.out.println("\n--- Stock Market ---");
