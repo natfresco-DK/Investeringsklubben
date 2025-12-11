@@ -123,4 +123,31 @@ public class CSVUserRepository implements UserRepository {
             return null;
         }
     }
+
+    @Override
+    public void addUser(User user) {
+        users.add(user);
+        saveUserToCSV(user);
+    }
+
+    private void saveUserToCSV(User user) {
+        try (java.io.FileWriter fw = new java.io.FileWriter(filePath, true);
+             java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
+             java.io.PrintWriter out = new java.io.PrintWriter(bw)) {
+            
+            String line = String.format("%d;%s;%s;%s;%d;%s;%s",
+                user.getUserId(),
+                user.getFullName(),
+                user.getEmail(),
+                sdf.format(user.getBirthDate()),
+                user.getInitialCashDKK(),
+                sdf.format(user.getCreatedAt()),
+                sdf.format(user.getLastUpdated()));
+            
+            out.println(line);
+        } catch (IOException e) {
+            System.err.println("Error writing to CSV file: " + filePath);
+            e.printStackTrace();
+        }
+    }
 }

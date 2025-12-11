@@ -149,10 +149,9 @@ public class ConsoleInterface {
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-               // case "1": addMember(); break;
+                case "1": addMember(); break;
                // case "2": removeMember(); break;
                // case "3": editMember(); break;
-                case "1": showStockMarket(); break;
                 case "0":
                     exit = true;
                     System.out.println("Exiting Leader Menu - Member Settings.");
@@ -160,6 +159,54 @@ public class ConsoleInterface {
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
+        }
+    }
+
+    private void addMember() {
+        System.out.println("\n=== Add New Member ===");
+        
+        try {
+            // Generer nyt bruger ID
+            int newUserId = userRepo.getAllUsers().stream()
+                .mapToInt(User::getUserId)
+                .max()
+                .orElse(0) + 1;
+            
+            System.out.print("Enter full name: ");
+            String fullName = scanner.nextLine().trim();
+            
+            System.out.print("Enter email: ");
+            String email = scanner.nextLine().trim();
+            
+            System.out.print("Enter birth date (dd-MM-yyyy): ");
+            String birthDateStr = scanner.nextLine().trim();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            Date birthDate = sdf.parse(birthDateStr);
+            
+            System.out.print("Enter initial cash (DKK): ");
+            int initialCash = Integer.parseInt(scanner.nextLine().trim());
+            
+            // Opret ny bruger med UserBuilder
+            User newUser = new UserBuilder()
+                .setUserId(newUserId)
+                .setFullName(fullName)
+                .setEmail(email)
+                .setBirthDate(birthDate)
+                .setInitialCashDKK(initialCash)
+                .setCreatedAt(new Date())
+                .setLastUpdated(new Date())
+                .build();
+            
+            // Tilføj bruger til repository
+            userRepo.addUser(newUser);
+            
+            System.out.println("\nMember added successfully!");
+            System.out.println("User ID: " + newUserId);
+            System.out.println("Name: " + fullName);
+            System.out.println("Initial Cash: " + initialCash + " DKK");
+            
+        } catch (Exception e) {
+            System.out.println("Error adding member: " + e.getMessage());
         }
     }
 
