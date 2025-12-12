@@ -12,7 +12,7 @@ class LeaderboardTest {
     private InMemoryStockRepository stockRepo;
     private InMemoryBondRepository bondRepo;
     private InMemoryTransactionRepository transactionRepo;
-    private inMemoryUserRepository userRepo; // din in-memory/fake user repo
+    private inMemoryUserRepository userRepo;
 
     private User alice;
     private User bob;
