@@ -38,7 +38,7 @@ public class Leaderboard {
     }
 
 
-        public static String generateLeaderboard(CSVHandler.UserRepository userRepo) { // brug samme UserRepository import som resten af app'en
+        public static String generateLeaderboard(CSVHandler.UserRepository userRepo) {
             List<User> users = userRepo.getAllUsers();
 
             users.sort((u1, u2) ->
