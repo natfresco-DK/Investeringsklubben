@@ -1,16 +1,15 @@
 package Domain;
 
-import Builder.PortfolioBuilder;
 import CSVHandler.*;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 public class Leaderboard {
 
-    public static void printAllPortfolios(UserRepository userRepo, StockRepository stockRepo, BondRepository bondRepo, TransactionRepository transactionRepo) {
+    public static String printAllPortfolios(UserRepository userRepo, StockRepository stockRepo, BondRepository bondRepo, TransactionRepository transactionRepo) {
         // Assign portfolios to users
-        userRepo.addUsersPortfolio(stockRepo, bondRepo,transactionRepo);
+        userRepo.addUsersPortfolio(stockRepo, bondRepo, transactionRepo);
         System.out.println(userRepo.getUserById(1).getPortfolio().getTotalValueDKK());
         System.out.println("\n===== USER PORTFOLIO LEADERBOARD =====\n");
 
@@ -36,6 +35,6 @@ public class Leaderboard {
         }
 
         System.out.println("===== END OF LEADERBOARD =====");
+        return "";
     }
 }
-

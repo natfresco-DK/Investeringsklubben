@@ -1,5 +1,8 @@
 
 import Builder.*;
+import CSVHandler.BondRepository;
+import CSVHandler.StockRepository;
+import CSVHandler.TransactionRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ class PortfolioBuilderTest {
     private InMemoryTransactionRepository transactionRepo;
     private User user;
     private File tempCsvFile;
+
 
     @BeforeEach
     void setup() throws IOException {
