@@ -1,10 +1,9 @@
 package Domain;
 
-import Builder.PortfolioBuilder;
 import CSVHandler.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Leaderboard {
 
@@ -37,5 +36,44 @@ public class Leaderboard {
 
         System.out.println("===== END OF LEADERBOARD =====");
     }
-}
+
+
+        public static String generateLeaderboard(CSVHandler.UserRepository userRepo) { // brug samme UserRepository import som resten af app'en
+            List<User> users = userRepo.getAllUsers();
+
+            users.sort((u1, u2) ->
+                    Double.compare(
+                            u2.getPortfolio().getTotalValueDKK(),
+                            u1.getPortfolio().getTotalValueDKK()
+                    )
+            );
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("===== USER PORTFOLIO LEADERBOARD =====\n\n");
+
+            for (User u : users) {
+                Portfolio p = u.getPortfolio();
+                sb.append("---------------------------------------\n");
+                sb.append("User: ").append(u.getFullName()).append("\n");
+                sb.append("Total Portfolio Value: ")
+                        .append(p.getTotalValueDKK()).append(" DKK\n\n");
+
+                Map<String, Holding> holdings = p.getHoldings();
+                if (holdings == null || holdings.isEmpty()) {
+                    sb.append("(no holdings)\n\n");
+                } else {
+                    for (Map.Entry<String, Holding> e : holdings.entrySet()) {
+                        Holding h = e.getValue();
+                        sb.append(String.format("Ticker: %s, Qty: %d, Price: %.2f\n",
+                                e.getKey(), h.getQuantity(), h.getPurchasePriceDKK()));
+                    }
+                    sb.append("\n");
+                }
+            }
+
+            sb.append("===== END OF LEADERBOARD =====");
+            return sb.toString();
+        }
+    }
+
 

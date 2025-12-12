@@ -1,5 +1,8 @@
 
 import Builder.*;
+import CSVHandler.BondRepository;
+import CSVHandler.StockRepository;
+import CSVHandler.TransactionRepository;
 import Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,28 @@ class PortfolioBuilderTest {
     private InMemoryTransactionRepository transactionRepo;
     private User user;
     private File tempCsvFile;
+
+    public static Portfolio buildPortfolio(User user, StockRepository stockRepo,
+                                           BondRepository bondRepo, TransactionRepository transactionRepo) {
+
+        Portfolio portfolio = user.getPortfolio();
+        List<Transaction> txs = transactionRepo.getTransactionsByUserId(user.getUserId());
+
+        for (Transaction t : txs) {
+            if (t.getQuantity() <= 0) continue; // ignore invalid tx
+
+            if (t.getOrderType() == OrderType.BUY) {
+                portfolio.buyStockOrBond(t.getTicker(), t.getQuantity(), stockRepo, transactionRepo, bondRepo);
+            } else if (t.getOrderType() == OrderType.SELL) {
+                portfolio.sellStockOrBond(t.getTicker(), t.getQuantity(), stockRepo, transactionRepo, bondRepo);
+            }
+        }
+
+        // **Dette er kritisk:** opdater totalValueDKK efter alle transaktioner
+        portfolio.updateTotalValue(stockRepo, bondRepo);
+
+        return portfolio;
+    }
 
     @BeforeEach
     void setup() throws IOException {
