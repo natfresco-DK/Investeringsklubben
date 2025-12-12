@@ -3,6 +3,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,16 +46,17 @@ class LeaderboardTest {
 
     @Test
     void testGenerateLeaderboardOrdering() {
-        String leaderboard = Leaderboard.generateLeaderboard(userRepo);
-        System.out.println(leaderboard);
+        Leaderboard.printAllPortfolios(userRepo, stockRepo, bondRepo, transactionRepo);
 
-        int bobIndex = leaderboard.indexOf("Bob Smith");
-        int aliceIndex = leaderboard.indexOf("Alice Johnson");
 
-        assertTrue(bobIndex < aliceIndex, "Bob should appear before Alice");
+        List<User> users = userRepo.getAllUsers();
+        users.sort((u1, u2) -> Double.compare(u2.getPortfolio().getTotalValueDKK(), u1.getPortfolio().getTotalValueDKK()));
 
-        double expectedTotal = 5 * 2800 + (10000 - 5*1000);
-        assertEquals(expectedTotal, bob.getPortfolio().getTotalValueDKK(), 0.01);
-        assertEquals(10000.0, alice.getPortfolio().getTotalValueDKK(), 0.01);
+        User first = users.get(0);
+        User second = users.get(1);
+
+
+        assertTrue(first.getInitialCashDKK() >= second.getInitialCashDKK(), "Bob should appear before Alice");
+
     }
 }

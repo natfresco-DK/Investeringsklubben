@@ -17,6 +17,7 @@ class PortfolioTest {
     private User user;
     private Portfolio portfolio;
 
+
     @BeforeEach
     void setup() {
         stockRepo = new InMemoryStockRepository();
