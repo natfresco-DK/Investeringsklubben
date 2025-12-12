@@ -399,18 +399,6 @@ public class Portfolio {
         return value;
     }
 
-    //Samlet porteføljeværdi inkl. kontantbeholdning.
-     public double calculatePortfolioValueIncludingCashDKK(StockRepository stockRepo) {
-         double holdingsValue = calculateCurrentHoldingsValueDKK(stockRepo);
-         double total = holdingsValue + cashBalance;
-
-         System.out.println("[TOTAL PORTFOLIO] Holdings: " + holdingsValue
-                 + " + Cash: " + cashBalance
-                 + " = " + total + " DKK\n");
-
-         return total;
-     }
-
      //Reelt afkast i DKK (nuværende værdi inkl. kontanter minus investeret beløb).
      public double calculateRealReturnDKK(StockRepository stockRepo) {
          double invested = calculateTotalInvestedDKK();

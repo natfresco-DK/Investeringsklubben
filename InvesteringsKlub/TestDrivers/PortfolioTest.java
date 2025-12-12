@@ -135,7 +135,8 @@ class PortfolioTest {
         assertEquals(1500.0, investedDKK, 0.001);
 
         // "Including cash" should truly include cash: 10 * 200 + (10000 - 1500) = 10500
-        double currentDKK = portfolio.calculatePortfolioValueIncludingCashDKK(stockRepo);
+        portfolio.updateTotalValue(stockRepo, bondRepo);
+        double currentDKK = portfolio.getTotalValueDKK();
         assertEquals(2000.0 + (10000.0 - 1500.0), currentDKK, 0.001);
 
         // Real return and percentage are based on holdings value vs invested
