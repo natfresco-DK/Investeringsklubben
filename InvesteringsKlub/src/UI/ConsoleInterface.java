@@ -210,15 +210,6 @@ public class ConsoleInterface {
         }
     }
 
-
-
-
-
-
-    // ----------------------------
-    // Shared Methods
-    // ----------------------------
-
    private void showMarketSelectionMenu(){
         boolean back = false;
         while(!back){
@@ -288,9 +279,6 @@ public class ConsoleInterface {
                 System.out.println("Total Value: " + currentUser.getPortfolio().getTotalValueDKK() + " DKK");
     }
 
-    // ----------------------------
-    // User Transaction History
-    // ----------------------------
     private void showTransactionsForCurrentUser() {
         List<Transaction> transactions = transactionRepo.getTransactionsByUserId(currentUser.getUserId());
 
@@ -395,21 +383,6 @@ public class ConsoleInterface {
         boolean success = currentUser.getPortfolio().sellStockOrBond(ticker, qty, stockRepo, transactionRepo, bondRepo);
         if(success) System.out.println("Stock sold successfully!");
         else System.out.println("Failed to sell stock.");
-    }
-
-    // ----------------------------
-    // Leader Methods
-    // ----------------------------
-    private void viewAllMemberPortfolios() {
-        System.out.println("\n--- All Member Portfolios ---");
-        for (User user : userRepo.getAllUsers()) {
-            System.out.println("User: " + user.getFullName() + " | Cash: " + user.getPortfolio().getCashBalance());
-            user.getPortfolio().getHoldings().forEach((ticker, holding) ->
-                    System.out.println("  " + ticker + " | Qty: " + holding.getQuantity() + " | Current Price DKK: " + holding.getCurrentPriceDKK())
-            );
-            System.out.println("  Total Value: " + user.getPortfolio().getTotalValueDKK());
-            System.out.println("---------------------------");
-        }
     }
 
     private void viewTransactionHistoryForUser() {

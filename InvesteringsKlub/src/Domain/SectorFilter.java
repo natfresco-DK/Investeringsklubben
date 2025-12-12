@@ -44,33 +44,5 @@ public class SectorFilter {
         
         return filtered;
     }
-    
-    // Print oversigt over alle sector og deres aktier
-    public static void printSectorOverview(List<Stock> stocks) {
-        Map<Sector, List<Stock>> grouped = groupBySector(stocks);
-        
-        System.out.println("\n═══════════════════════════════════════════════════════════");
-        System.out.println("           OVERVIEW OF SHARES BY SECTOR");
-        System.out.println("═══════════════════════════════════════════════════════════\n");
-        
-        for (Sector sector : Sector.values()) {
-            List<Stock> sectorStocks = grouped.get(sector);
-            System.out.println( sector.getDisplayName() + " (" + sectorStocks.size() + " stocks):");
-            System.out.println("───────────────────────────────────────────────────────────");
-            
-            if (sectorStocks.isEmpty()) {
-                System.out.println("  No stocks in this sector");
-            } else {
-                for (Stock stock : sectorStocks) {
-                    System.out.printf("  • %-10s - %-30s %8.2f %s%n", 
-                        stock.getTicker(), 
-                        stock.getName(), 
-                        stock.getPrice(), 
-                        stock.getCurrency());
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("═══════════════════════════════════════════════════════════\n");
-    }
+
 }
