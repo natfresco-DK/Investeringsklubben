@@ -17,6 +17,7 @@ public class Portfolio {
         this.cashBalance = cashBalance;
         totalValueDKK = cashBalance;
     }
+
     // Getters
     public double getTotalValueDKK() {
         return totalValueDKK;
@@ -42,7 +43,6 @@ public class Portfolio {
         put(key,holding);
         updateTotalValue(stockRepo, bondRepo);
     }
-
     public void removeHolding(String ticker, StockRepository stockRepo, BondRepository bondRepo){
         String key = norm(ticker);
         remove(key);
@@ -52,13 +52,13 @@ public class Portfolio {
         return key == null ? null : key.toLowerCase(Locale.ROOT);
     }
 
-    public Holding put(String ticker, Holding holding){
+    private Holding put(String ticker, Holding holding){
         return holdings.put(norm(ticker), holding);
     }
     public Holding get(String ticker){
         return holdings.get(norm(ticker));
     }
-    public Holding remove(String ticker){
+    private Holding remove(String ticker){
         return holdings.remove(norm(ticker));
     }
 
@@ -143,6 +143,7 @@ public class Portfolio {
 
         return true;
         }
+
         //Bond Transaction
         double price = bond.getPrice();
         double totalValue = price * qty;
@@ -349,7 +350,7 @@ public class Portfolio {
     }
 
     //Samlet investeret beløb i DKK (antal * købspris)
-     public double calculateTotalInvestedDKK() {
+    public double calculateTotalInvestedDKK() {
          double total = 0.0;
          for (Holding h : holdings.values()) {
              double investedInHolding = h.getQuantity() * h.getPurchasePriceDKK();
@@ -429,8 +430,6 @@ public class Portfolio {
 
         return percentage;
     }
-
-
 
     public String toString(StockRepository stockRepo) {
         StringBuilder sb = new StringBuilder();

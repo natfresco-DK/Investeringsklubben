@@ -44,9 +44,7 @@ public class ConsoleInterface {
         }
     }
 
-    // ----------------------------
     // User Login & Menu
-    // ----------------------------
     private void userLogin() {
         System.out.print("Input user ID: ");
         int userID = Integer.parseInt(scanner.nextLine());
@@ -88,9 +86,8 @@ public class ConsoleInterface {
         System.out.print("Choose an option: ");
     }
 
-    // ----------------------------
+
     // Leader Login & Menu
-    // ----------------------------
     private void leaderLogin() {
         System.out.println("Hello Leader");
         boolean exit = false;
@@ -131,8 +128,7 @@ public class ConsoleInterface {
         System.out.print("Choose an option: ");
     }
 
-// Member Settings Menu - Placeholder for future implementation
-
+    // Member Settings Menu
     private void showSettingsMemberMenu(){
         System.out.println("\n=== Settings Menu ===");
         System.out.println("1. Add member");
@@ -210,7 +206,7 @@ public class ConsoleInterface {
         }
     }
 
-   private void showMarketSelectionMenu(){
+    private void showMarketSelectionMenu(){
         boolean back = false;
         while(!back){
             System.out.println("\n=== Market Selection Menu ===");
